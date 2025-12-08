@@ -28,5 +28,24 @@ namespace Calorizer.Web.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+
+        [HttpGet]
+        public IActionResult SetLanguage(string language, string returnUrl = "/")
+        {
+            if (language == "ar" || language == "en")
+            {
+                // Session
+                HttpContext.Session.SetString("Language", language);
+
+                // Cookie
+                Response.Cookies.Append("Language", language, new CookieOptions
+                {
+                    Expires = DateTimeOffset.UtcNow.AddYears(1)
+                });
+            }
+
+            return Redirect(returnUrl);
+        }
     }
 }
