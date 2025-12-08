@@ -1,15 +1,52 @@
+using Calorizer.Business.Interfaces;
+using Calorizer.Business.Services;
+using Calorizer.DAL;
+using Calorizer.DAL.Models;
+using Calorizer.DAL.Repositories;
+using Calorizer.Web.Services;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services to the container
 builder.Services.AddControllersWithViews();
+
+// Add DbContext
+builder.Services.AddDbContext<CalorizerDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("CalorizerDb")));
+
+// Register Generic Repository
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+// Register Unit of Work
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// Register Localization Service (Web Layer)
+builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
+
+// Register Localization Provider (Business Layer Interface)
+builder.Services.AddSingleton<ILocalizationProvider, LocalizationAdapter>();
+
+// Register Business Services
+builder.Services.AddScoped<FoodService>();
+
+// Add Session support
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+// Add HttpContextAccessor to access session in services
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -17,6 +54,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthorization();
 

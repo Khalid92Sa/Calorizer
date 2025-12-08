@@ -1,0 +1,66 @@
+﻿{
+  "Welcome": {
+    "ValueEn": "Welcome",
+    "ValueAr": "مرحبا"
+  },
+  "Home": {
+    "ValueEn": "Home",
+    "ValueAr": "الرئيسية"
+  },
+  "About": {
+    "ValueEn": "About",
+    "ValueAr": "حول"
+  },
+  "Contact": {
+    "ValueEn": "Contact",
+    "ValueAr": "اتصل بنا"
+  },
+  "Login": {
+    "ValueEn": "Login",
+    "ValueAr": "تسجيل الدخول"
+  },
+  "Logout": {
+    "ValueEn": "Logout",
+    "ValueAr": "تسجيل الخروج"
+  },
+  "Submit": {
+    "ValueEn": "Submit",
+    "ValueAr": "إرسال"
+  },
+  "Cancel": {
+    "ValueEn": "Cancel",
+    "ValueAr": "إلغاء"
+  },
+  "Save": {
+    "ValueEn": "Save",
+    "ValueAr": "حفظ"
+  },
+  "Delete": {
+    "ValueEn": "Delete",
+    "ValueAr": "حذف"
+  },
+  "Edit": {
+    "ValueEn": "Edit",
+    "ValueAr": "تعديل"
+  },
+  "Search": {
+    "ValueEn": "Search",
+    "ValueAr": "بحث"
+  },
+  "FoodName": {
+    "ValueEn": "Food Name",
+    "ValueAr": "اسم الطعام"
+  },
+  "Calories": {
+    "ValueEn": "Calories",
+    "ValueAr": "السعرات الحرارية"
+  },
+  "Success": {
+    "ValueEn": "Operation completed successfully",
+    "ValueAr": "تمت العملية بنجاح"
+  },
+  "Error": {
+    "ValueEn": "An error occurred",
+    "ValueAr": "حدث خطأ"
+  }
+}
