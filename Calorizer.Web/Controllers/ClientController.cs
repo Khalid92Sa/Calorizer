@@ -1,9 +1,7 @@
 ﻿using Calorizer.Business.DTOs;
-using Calorizer.Business.DTOs.Validations;
 using Calorizer.Business.Enums;
 using Calorizer.Business.Interfaces;
 using Calorizer.Business.Services;
-using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Calorizer.Web.Controllers
@@ -13,30 +11,15 @@ namespace Calorizer.Web.Controllers
         private readonly Localizer _localizer;
         private readonly IClientService _clientService;
         private readonly ILookupService _lookupService;
-        private readonly IValidator<ClientDto> _clientValidator;
-        private readonly IValidator<WeightHistoryDto> _weightHistoryValidator;
-        private readonly IValidator<BiochemicalMedicalTestDto> _biochemicalTestValidator;
-        private readonly IValidator<DrugsSupplementDto> _drugsSupplementValidator;
-        private readonly IValidator<MedicalHistoryDto> _medicalHistoryValidator;
 
         public ClientController(
             Localizer localizer,
             IClientService clientService,
-            ILookupService lookupService,
-            IValidator<ClientDto> clientValidator,
-            IValidator<WeightHistoryDto> weightHistoryValidator,
-            IValidator<BiochemicalMedicalTestDto> biochemicalTestValidator,
-            IValidator<DrugsSupplementDto> drugsSupplementValidator,
-            IValidator<MedicalHistoryDto> medicalHistoryValidator)
+            ILookupService lookupService)
         {
             _localizer = localizer;
             _clientService = clientService;
             _lookupService = lookupService;
-            _clientValidator = clientValidator;
-            _weightHistoryValidator = weightHistoryValidator;
-            _biochemicalTestValidator = biochemicalTestValidator;
-            _drugsSupplementValidator = drugsSupplementValidator;
-            _medicalHistoryValidator = medicalHistoryValidator;
         }
 
         // GET: Client/Index
@@ -62,32 +45,39 @@ namespace Calorizer.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ClientDto model)
         {
-            var validationResult = await _clientValidator.ValidateAsync(model);
-
-            if (!validationResult.IsValid)
-            {
-                foreach (var error in validationResult.Errors)
-                {
-                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
-                }
-                model.Genders = await _lookupService.GetLookupItems(LookupTypes.Gender);
-                return View(model);
-            }
-
             try
             {
-                // TODO: Get actual user ID from authentication
-                int userId = 1;
+                int userId = 1; // TODO: Get actual user ID from authentication
 
-                var createdClient = await _clientService.CreateClientAsync(model, userId);
-                TempData["SuccessMessage"] = "Client created successfully";
-                return RedirectToAction(nameof(Edit), new { id = createdClient.Id });
+                var result = await _clientService.CreateClientAsync(model, userId);
+
+                if (result.Succeeded)
+                {
+                    string msg = _localizer["ClientCreatedSuccessfully"];
+                    return Json(new
+                    {
+                        isSuccess = true,
+                        resultCode = result.StatusCode,
+                        msg = msg,
+                        redirectUrl = Url.Action(nameof(Edit), new { id = result.Data?.Id })
+                    });
+                }
+
+                return Json(new
+                {
+                    isSuccess = false,
+                    resultCode = result.StatusCode,
+                    brokenRules = result.BrokenRules,
+                    msg = _localizer[result.Message]
+                });
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", $"Error creating client: {ex.Message}");
-                model.Genders = await _lookupService.GetLookupItems(LookupTypes.Gender);
-                return View(model);
+                return Json(new
+                {
+                    isSuccess = false,
+                    msg = _localizer["ErrorOccurred"]
+                });
             }
         }
 
@@ -114,40 +104,38 @@ namespace Calorizer.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ClientDto model)
         {
-            var validationResult = await _clientValidator.ValidateAsync(model);
-
-            if (!validationResult.IsValid)
-            {
-                foreach (var error in validationResult.Errors)
-                {
-                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
-                }
-                model.Genders = await _lookupService.GetLookupItems(LookupTypes.Gender);
-                model.WeightHistories = await _clientService.GetWeightHistoriesAsync(model.Id);
-                model.BiochemicalTests = await _clientService.GetBiochemicalTestsAsync(model.Id);
-                model.DrugsSupplements = await _clientService.GetDrugsSupplementsAsync(model.Id);
-                model.MedicalHistories = await _clientService.GetMedicalHistoriesAsync(model.Id);
-                return View(model);
-            }
-
             try
             {
-                // TODO: Get actual user ID from authentication
-                int userId = 1;
+                int userId = 1; // TODO: Get actual user ID from authentication
 
-                await _clientService.UpdateClientAsync(model, userId);
-                TempData["SuccessMessage"] = "Client updated successfully";
-                return RedirectToAction(nameof(Edit), new { id = model.Id });
+                var result = await _clientService.UpdateClientAsync(model, userId);
+
+                if (result.Succeeded)
+                {
+                    string msg = _localizer["ClientUpdatedSuccessfully"];
+                    return Json(new
+                    {
+                        isSuccess = true,
+                        resultCode = result.StatusCode,
+                        msg = msg
+                    });
+                }
+
+                return Json(new
+                {
+                    isSuccess = false,
+                    resultCode = result.StatusCode,
+                    brokenRules = result.BrokenRules,
+                    msg = _localizer[result.Message]
+                });
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", $"Error updating client: {ex.Message}");
-                model.Genders = await _lookupService.GetLookupItems(LookupTypes.Gender);
-                model.WeightHistories = await _clientService.GetWeightHistoriesAsync(model.Id);
-                model.BiochemicalTests = await _clientService.GetBiochemicalTestsAsync(model.Id);
-                model.DrugsSupplements = await _clientService.GetDrugsSupplementsAsync(model.Id);
-                model.MedicalHistories = await _clientService.GetMedicalHistoriesAsync(model.Id);
-                return View(model);
+                return Json(new
+                {
+                    isSuccess = false,
+                    msg = _localizer["ErrorOccurred"]
+                });
             }
         }
 
@@ -156,22 +144,35 @@ namespace Calorizer.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> AddWeightHistory([FromBody] WeightHistoryDto model)
         {
-            var validationResult = await _weightHistoryValidator.ValidateAsync(model);
-            if (!validationResult.IsValid)
-            {
-                return Json(new { success = false, message = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)) });
-            }
-
             try
             {
-                int userId = 1; // TODO: Get from authentication
-                await _clientService.AddWeightHistoryAsync(model.ClientId, model, userId);
-                var histories = await _clientService.GetWeightHistoriesAsync(model.ClientId);
-                return Json(new { success = true, data = histories });
+                int userId = 1;
+                var result = await _clientService.AddWeightHistoryAsync(model.ClientId, model, userId);
+
+                if (result.Succeeded)
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        data = result.Data,
+                        msg = _localizer["WeightHistoryAdded"]
+                    });
+                }
+
+                return Json(new
+                {
+                    success = false,
+                    brokenRules = result.BrokenRules,
+                    message = _localizer[result.Message]
+                });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new
+                {
+                    success = false,
+                    message = _localizer["ErrorOccurred"]
+                });
             }
         }
 
@@ -182,11 +183,20 @@ namespace Calorizer.Web.Controllers
             {
                 await _clientService.DeleteWeightHistoryAsync(id);
                 var histories = await _clientService.GetWeightHistoriesAsync(clientId);
-                return Json(new { success = true, data = histories });
+                return Json(new
+                {
+                    success = true,
+                    data = histories,
+                    msg = _localizer["WeightHistoryDeleted"]
+                });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new
+                {
+                    success = false,
+                    message = _localizer["ErrorOccurred"]
+                });
             }
         }
 
@@ -197,22 +207,35 @@ namespace Calorizer.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> AddBiochemicalTest([FromBody] BiochemicalMedicalTestDto model)
         {
-            var validationResult = await _biochemicalTestValidator.ValidateAsync(model);
-            if (!validationResult.IsValid)
-            {
-                return Json(new { success = false, message = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)) });
-            }
-
             try
             {
                 int userId = 1;
-                await _clientService.AddBiochemicalTestAsync(model.ClientId, model, userId);
-                var tests = await _clientService.GetBiochemicalTestsAsync(model.ClientId);
-                return Json(new { success = true, data = tests });
+                var result = await _clientService.AddBiochemicalTestAsync(model.ClientId, model, userId);
+
+                if (result.Succeeded)
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        data = result.Data,
+                        msg = _localizer["BiochemicalTestAdded"]
+                    });
+                }
+
+                return Json(new
+                {
+                    success = false,
+                    brokenRules = result.BrokenRules,
+                    message = _localizer[result.Message]
+                });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new
+                {
+                    success = false,
+                    message = _localizer["ErrorOccurred"]
+                });
             }
         }
 
@@ -223,11 +246,20 @@ namespace Calorizer.Web.Controllers
             {
                 await _clientService.DeleteBiochemicalTestAsync(id);
                 var tests = await _clientService.GetBiochemicalTestsAsync(clientId);
-                return Json(new { success = true, data = tests });
+                return Json(new
+                {
+                    success = true,
+                    data = tests,
+                    msg = _localizer["BiochemicalTestDeleted"]
+                });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new
+                {
+                    success = false,
+                    message = _localizer["ErrorOccurred"]
+                });
             }
         }
 
@@ -238,22 +270,35 @@ namespace Calorizer.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> AddDrugsSupplement([FromBody] DrugsSupplementDto model)
         {
-            var validationResult = await _drugsSupplementValidator.ValidateAsync(model);
-            if (!validationResult.IsValid)
-            {
-                return Json(new { success = false, message = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)) });
-            }
-
             try
             {
                 int userId = 1;
-                await _clientService.AddDrugsSupplementAsync(model.ClientId, model, userId);
-                var drugs = await _clientService.GetDrugsSupplementsAsync(model.ClientId);
-                return Json(new { success = true, data = drugs });
+                var result = await _clientService.AddDrugsSupplementAsync(model.ClientId, model, userId);
+
+                if (result.Succeeded)
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        data = result.Data,
+                        msg = _localizer["DrugsSupplementAdded"]
+                    });
+                }
+
+                return Json(new
+                {
+                    success = false,
+                    brokenRules = result.BrokenRules,
+                    message = _localizer[result.Message]
+                });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new
+                {
+                    success = false,
+                    message = _localizer["ErrorOccurred"]
+                });
             }
         }
 
@@ -264,11 +309,20 @@ namespace Calorizer.Web.Controllers
             {
                 await _clientService.DeleteDrugsSupplementAsync(id);
                 var drugs = await _clientService.GetDrugsSupplementsAsync(clientId);
-                return Json(new { success = true, data = drugs });
+                return Json(new
+                {
+                    success = true,
+                    data = drugs,
+                    msg = _localizer["DrugsSupplementDeleted"]
+                });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new
+                {
+                    success = false,
+                    message = _localizer["ErrorOccurred"]
+                });
             }
         }
 
@@ -279,22 +333,35 @@ namespace Calorizer.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> AddMedicalHistory([FromBody] MedicalHistoryDto model)
         {
-            var validationResult = await _medicalHistoryValidator.ValidateAsync(model);
-            if (!validationResult.IsValid)
-            {
-                return Json(new { success = false, message = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)) });
-            }
-
             try
             {
                 int userId = 1;
-                await _clientService.AddMedicalHistoryAsync(model.ClientId, model, userId);
-                var histories = await _clientService.GetMedicalHistoriesAsync(model.ClientId);
-                return Json(new { success = true, data = histories });
+                var result = await _clientService.AddMedicalHistoryAsync(model.ClientId, model, userId);
+
+                if (result.Succeeded)
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        data = result.Data,
+                        msg = _localizer["MedicalHistoryAdded"]
+                    });
+                }
+
+                return Json(new
+                {
+                    success = false,
+                    brokenRules = result.BrokenRules,
+                    message = _localizer[result.Message]
+                });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new
+                {
+                    success = false,
+                    message = _localizer["ErrorOccurred"]
+                });
             }
         }
 
@@ -305,11 +372,20 @@ namespace Calorizer.Web.Controllers
             {
                 await _clientService.DeleteMedicalHistoryAsync(id);
                 var histories = await _clientService.GetMedicalHistoriesAsync(clientId);
-                return Json(new { success = true, data = histories });
+                return Json(new
+                {
+                    success = true,
+                    data = histories,
+                    msg = _localizer["MedicalHistoryDeleted"]
+                });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new
+                {
+                    success = false,
+                    message = _localizer["ErrorOccurred"]
+                });
             }
         }
 

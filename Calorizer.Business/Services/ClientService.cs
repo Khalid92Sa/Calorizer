@@ -1,19 +1,144 @@
 ﻿using Calorizer.Business.DTOs;
 using Calorizer.Business.Interfaces;
+using Calorizer.Business.Models;
 using Calorizer.DAL.Models;
 using Calorizer.DAL.Repositories;
+using FluentValidation;
 
 namespace Calorizer.Business.Services
 {
-    public class ClientService : IClientService
+    public class ClientService : BaseService, IClientService
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public ClientService(IUnitOfWork unitOfWork)
+        public ClientService(IUnitOfWork unitOfWork, IValidatorFactory validatorFactory)
+            : base(validatorFactory)
         {
             _unitOfWork = unitOfWork;
         }
 
+        public async Task<Response<ClientDto>> CreateClientAsync(ClientDto clientDto, int userId)
+        {
+            // Validate DTO
+            var validModel = await Validate(clientDto);
+            if (!validModel.Succeeded)
+                return new Response<ClientDto>
+                {
+                    BrokenRules = validModel.BrokenRules,
+                    StatusCode = validModel.StatusCode,
+                    Message = validModel.Message
+                };
+
+            try
+            {
+                var client = new Client
+                {
+                    FullNameEn = clientDto.FullNameEn,
+                    FullNameAr = clientDto.FullNameAr,
+                    MobileNumber = clientDto.MobileNumber,
+                    GenderId = clientDto.GenderId,
+                    Address = clientDto.Address,
+                    DateOfBirth = clientDto.DateOfBirth,
+                    Weight = clientDto.Weight,
+                    Height = clientDto.Height
+                };
+
+                await _unitOfWork.Repository<Client>().AddAsync(client);
+
+                // Add initial weight history if weight/height provided
+                if (clientDto.Weight.HasValue || clientDto.Height.HasValue)
+                {
+                    var weightHistory = new WeightHistory
+                    {
+                        ClientId = client.Id,
+                        Weight = clientDto.Weight,
+                        Height = clientDto.Height,
+                        CreatedBy = userId,
+                        CreatedOn = DateTime.Now
+                    };
+                    await _unitOfWork.Repository<WeightHistory>().AddAsync(weightHistory);
+                }
+
+                clientDto.Id = client.Id;
+                return new Response<ClientDto>(clientDto);
+            }
+            catch (Exception ex)
+            {
+                return new Response<ClientDto>
+                {
+                    Succeeded = false,
+                    Message = "ErrorCreatingClient",
+                    StatusCode = HttpStatusCode.BadRequest
+                };
+            }
+        }
+
+        public async Task<Response<ClientDto>> UpdateClientAsync(ClientDto clientDto, int userId)
+        {
+            // Validate DTO
+            var validModel = await Validate(clientDto);
+            if (!validModel.Succeeded)
+                return new Response<ClientDto>
+                {
+                    BrokenRules = validModel.BrokenRules,
+                    StatusCode = validModel.StatusCode,
+                    Message = validModel.Message
+                };
+
+            try
+            {
+                var client = await _unitOfWork.Repository<Client>().GetByIdAsync(clientDto.Id);
+                if (client == null)
+                    return new Response<ClientDto>
+                    {
+                        Succeeded = false,
+                        Message = "ClientNotFound",
+                        StatusCode = HttpStatusCode.BadRequest
+                    };
+
+                // Check if weight or height changed
+                bool weightChanged = client.Weight != clientDto.Weight;
+                bool heightChanged = client.Height != clientDto.Height;
+
+                client.FullNameEn = clientDto.FullNameEn;
+                client.FullNameAr = clientDto.FullNameAr;
+                client.MobileNumber = clientDto.MobileNumber;
+                client.GenderId = clientDto.GenderId;
+                client.Address = clientDto.Address;
+                client.DateOfBirth = clientDto.DateOfBirth;
+                client.Weight = clientDto.Weight;
+                client.Height = clientDto.Height;
+
+                await _unitOfWork.Repository<Client>().UpdateAsync(client);
+
+                // Add weight history record if changed
+                if (weightChanged || heightChanged)
+                {
+                    var weightHistory = new WeightHistory
+                    {
+                        ClientId = client.Id,
+                        Weight = clientDto.Weight,
+                        Height = clientDto.Height,
+                        CreatedBy = userId,
+                        CreatedOn = DateTime.Now
+                    };
+                    await _unitOfWork.Repository<WeightHistory>().AddAsync(weightHistory);
+                }
+
+                return new Response<ClientDto>(clientDto);
+            }
+            catch (Exception ex)
+            {
+                return new Response<ClientDto>
+                {
+                    Succeeded = false,
+                    Message = "ErrorUpdatingClient",
+                    StatusCode = HttpStatusCode.BadRequest
+                };
+            }
+        }
+
+        // Keep existing methods for GetClientByIdAsync, GetAllClientsAsync, DeleteClientAsync
         public async Task<ClientDto?> GetClientByIdAsync(int id)
         {
             var client = await _unitOfWork.Repository<Client>().GetByIdAsync(id);
@@ -50,78 +175,6 @@ namespace Calorizer.Business.Services
             }).ToList();
         }
 
-        public async Task<ClientDto> CreateClientAsync(ClientDto clientDto, int userId)
-        {
-            var client = new Client
-            {
-                FullNameEn = clientDto.FullNameEn,
-                FullNameAr = clientDto.FullNameAr,
-                MobileNumber = clientDto.MobileNumber,
-                GenderId = clientDto.GenderId,
-                Address = clientDto.Address,
-                DateOfBirth = clientDto.DateOfBirth,
-                Weight = clientDto.Weight,
-                Height = clientDto.Height
-            };
-
-            await _unitOfWork.Repository<Client>().AddAsync(client);
-
-            // Add initial weight history if weight/height provided
-            if (clientDto.Weight.HasValue || clientDto.Height.HasValue)
-            {
-                var weightHistory = new WeightHistory
-                {
-                    ClientId = client.Id,
-                    Weight = clientDto.Weight,
-                    Height = clientDto.Height,
-                    CreatedBy = userId,
-                    CreatedOn = DateTime.Now
-                };
-                await _unitOfWork.Repository<WeightHistory>().AddAsync(weightHistory);
-            }
-
-            clientDto.Id = client.Id;
-            return clientDto;
-        }
-
-        public async Task<ClientDto> UpdateClientAsync(ClientDto clientDto, int userId)
-        {
-            var client = await _unitOfWork.Repository<Client>().GetByIdAsync(clientDto.Id);
-            if (client == null)
-                throw new KeyNotFoundException($"Client with ID {clientDto.Id} not found");
-
-            // Check if weight or height changed
-            bool weightChanged = client.Weight != clientDto.Weight;
-            bool heightChanged = client.Height != clientDto.Height;
-
-            client.FullNameEn = clientDto.FullNameEn;
-            client.FullNameAr = clientDto.FullNameAr;
-            client.MobileNumber = clientDto.MobileNumber;
-            client.GenderId = clientDto.GenderId;
-            client.Address = clientDto.Address;
-            client.DateOfBirth = clientDto.DateOfBirth;
-            client.Weight = clientDto.Weight;
-            client.Height = clientDto.Height;
-
-            await _unitOfWork.Repository<Client>().UpdateAsync(client);
-
-            // Add weight history record if changed
-            if (weightChanged || heightChanged)
-            {
-                var weightHistory = new WeightHistory
-                {
-                    ClientId = client.Id,
-                    Weight = clientDto.Weight,
-                    Height = clientDto.Height,
-                    CreatedBy = userId,
-                    CreatedOn = DateTime.Now
-                };
-                await _unitOfWork.Repository<WeightHistory>().AddAsync(weightHistory);
-            }
-
-            return clientDto;
-        }
-
         public async Task DeleteClientAsync(int id)
         {
             await _unitOfWork.Repository<Client>().DeleteAsync(id);
@@ -129,8 +182,17 @@ namespace Calorizer.Business.Services
 
         #region Weight History
 
-        public async Task AddWeightHistoryAsync(int clientId, WeightHistoryDto weightHistoryDto, int userId)
+        public async Task<Response<List<WeightHistoryDto>>> AddWeightHistoryAsync(int clientId, WeightHistoryDto weightHistoryDto, int userId)
         {
+            var validModel = await Validate(weightHistoryDto);
+            if (!validModel.Succeeded)
+                return new Response<List<WeightHistoryDto>>
+                {
+                    BrokenRules = validModel.BrokenRules,
+                    StatusCode = validModel.StatusCode,
+                    Message = validModel.Message
+                };
+
             var weightHistory = new WeightHistory
             {
                 ClientId = clientId,
@@ -142,7 +204,6 @@ namespace Calorizer.Business.Services
 
             await _unitOfWork.Repository<WeightHistory>().AddAsync(weightHistory);
 
-            // Update client's current weight/height
             var client = await _unitOfWork.Repository<Client>().GetByIdAsync(clientId);
             if (client != null)
             {
@@ -150,6 +211,9 @@ namespace Calorizer.Business.Services
                 client.Height = weightHistoryDto.Height;
                 await _unitOfWork.Repository<Client>().UpdateAsync(client);
             }
+
+            var histories = await GetWeightHistoriesAsync(clientId);
+            return new Response<List<WeightHistoryDto>>(histories);
         }
 
         public async Task<List<WeightHistoryDto>> GetWeightHistoriesAsync(int clientId)
@@ -177,8 +241,17 @@ namespace Calorizer.Business.Services
 
         #region Biochemical Tests
 
-        public async Task AddBiochemicalTestAsync(int clientId, BiochemicalMedicalTestDto testDto, int userId)
+        public async Task<Response<List<BiochemicalMedicalTestDto>>> AddBiochemicalTestAsync(int clientId, BiochemicalMedicalTestDto testDto, int userId)
         {
+            var validModel = await Validate(testDto);
+            if (!validModel.Succeeded)
+                return new Response<List<BiochemicalMedicalTestDto>>
+                {
+                    BrokenRules = validModel.BrokenRules,
+                    StatusCode = validModel.StatusCode,
+                    Message = validModel.Message
+                };
+
             var test = new BiochemicalMedicalTest
             {
                 ClientId = clientId,
@@ -188,6 +261,9 @@ namespace Calorizer.Business.Services
             };
 
             await _unitOfWork.Repository<BiochemicalMedicalTest>().AddAsync(test);
+
+            var tests = await GetBiochemicalTestsAsync(clientId);
+            return new Response<List<BiochemicalMedicalTestDto>>(tests);
         }
 
         public async Task<List<BiochemicalMedicalTestDto>> GetBiochemicalTestsAsync(int clientId)
@@ -214,8 +290,17 @@ namespace Calorizer.Business.Services
 
         #region Drugs/Supplements
 
-        public async Task AddDrugsSupplementAsync(int clientId, DrugsSupplementDto drugDto, int userId)
+        public async Task<Response<List<DrugsSupplementDto>>> AddDrugsSupplementAsync(int clientId, DrugsSupplementDto drugDto, int userId)
         {
+            var validModel = await Validate(drugDto);
+            if (!validModel.Succeeded)
+                return new Response<List<DrugsSupplementDto>>
+                {
+                    BrokenRules = validModel.BrokenRules,
+                    StatusCode = validModel.StatusCode,
+                    Message = validModel.Message
+                };
+
             var drug = new DrugsSupplement
             {
                 ClientId = clientId,
@@ -225,6 +310,9 @@ namespace Calorizer.Business.Services
             };
 
             await _unitOfWork.Repository<DrugsSupplement>().AddAsync(drug);
+
+            var drugs = await GetDrugsSupplementsAsync(clientId);
+            return new Response<List<DrugsSupplementDto>>(drugs);
         }
 
         public async Task<List<DrugsSupplementDto>> GetDrugsSupplementsAsync(int clientId)
@@ -251,8 +339,17 @@ namespace Calorizer.Business.Services
 
         #region Medical History
 
-        public async Task AddMedicalHistoryAsync(int clientId, MedicalHistoryDto medicalHistoryDto, int userId)
+        public async Task<Response<List<MedicalHistoryDto>>> AddMedicalHistoryAsync(int clientId, MedicalHistoryDto medicalHistoryDto, int userId)
         {
+            var validModel = await Validate(medicalHistoryDto);
+            if (!validModel.Succeeded)
+                return new Response<List<MedicalHistoryDto>>
+                {
+                    BrokenRules = validModel.BrokenRules,
+                    StatusCode = validModel.StatusCode,
+                    Message = validModel.Message
+                };
+
             var medicalHistory = new MedicalHistory
             {
                 ClientId = clientId,
@@ -262,6 +359,9 @@ namespace Calorizer.Business.Services
             };
 
             await _unitOfWork.Repository<MedicalHistory>().AddAsync(medicalHistory);
+
+            var histories = await GetMedicalHistoriesAsync(clientId);
+            return new Response<List<MedicalHistoryDto>>(histories);
         }
 
         public async Task<List<MedicalHistoryDto>> GetMedicalHistoriesAsync(int clientId)

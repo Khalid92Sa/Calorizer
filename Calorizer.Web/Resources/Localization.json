@@ -62,5 +62,280 @@
   "Error": {
     "ValueEn": "An error occurred",
     "ValueAr": "حدث خطأ"
+  },
+  "ErrorOccurred": {
+    "ValueEn": "An error occurred",
+    "ValueAr": "حدث خطأ"
+  },
+  "ValidationError": {
+    "ValueEn": "Validation error",
+    "ValueAr": "خطأ في التحقق"
+  },
+  "ClientCreatedSuccessfully": {
+    "ValueEn": "Client created successfully",
+    "ValueAr": "تم إنشاء العميل بنجاح"
+  },
+  "ClientUpdatedSuccessfully": {
+    "ValueEn": "Client updated successfully",
+    "ValueAr": "تم تحديث العميل بنجاح"
+  },
+  "ErrorCreatingClient": {
+    "ValueEn": "Error creating client",
+    "ValueAr": "خطأ في إنشاء العميل"
+  },
+  "ErrorUpdatingClient": {
+    "ValueEn": "Error updating client",
+    "ValueAr": "خطأ في تحديث العميل"
+  },
+  "ClientNotFound": {
+    "ValueEn": "Client not found",
+    "ValueAr": "العميل غير موجود"
+  },
+  "WeightHistoryAdded": {
+    "ValueEn": "Weight history added successfully",
+    "ValueAr": "تم إضافة سجل الوزن بنجاح"
+  },
+  "WeightHistoryDeleted": {
+    "ValueEn": "Weight history deleted successfully",
+    "ValueAr": "تم حذف سجل الوزن بنجاح"
+  },
+  "BiochemicalTestAdded": {
+    "ValueEn": "Biochemical test added successfully",
+    "ValueAr": "تم إضافة الفحص الطبي بنجاح"
+  },
+  "BiochemicalTestDeleted": {
+    "ValueEn": "Biochemical test deleted successfully",
+    "ValueAr": "تم حذف الفحص الطبي بنجاح"
+  },
+  "DrugsSupplementAdded": {
+    "ValueEn": "Drug/Supplement added successfully",
+    "ValueAr": "تم إضافة الدواء/المكمل بنجاح"
+  },
+  "DrugsSupplementDeleted": {
+    "ValueEn": "Drug/Supplement deleted successfully",
+    "ValueAr": "تم حذف الدواء/المكمل بنجاح"
+  },
+  "MedicalHistoryAdded": {
+    "ValueEn": "Medical history added successfully",
+    "ValueAr": "تم إضافة السجل الطبي بنجاح"
+  },
+  "MedicalHistoryDeleted": {
+    "ValueEn": "Medical history deleted successfully",
+    "ValueAr": "تم حذف السجل الطبي بنجاح"
+  },
+  "FullNameEn": {
+    "ValueEn": "Full Name (English)",
+    "ValueAr": "الاسم الكامل (إنجليزي)"
+  },
+  "FullNameAr": {
+    "ValueEn": "Full Name (Arabic)",
+    "ValueAr": "الاسم الكامل (عربي)"
+  },
+  "MobileNumber": {
+    "ValueEn": "Mobile Number",
+    "ValueAr": "رقم الجوال"
+  },
+  "Gender": {
+    "ValueEn": "Gender",
+    "ValueAr": "الجنس"
+  },
+  "DateOfBirth": {
+    "ValueEn": "Date of Birth",
+    "ValueAr": "تاريخ الميلاد"
+  },
+  "Height": {
+    "ValueEn": "Height (cm)",
+    "ValueAr": "الطول (سم)"
+  },
+  "Weight": {
+    "ValueEn": "Weight (kg)",
+    "ValueAr": "الوزن (كجم)"
+  },
+  "Address": {
+    "ValueEn": "Address",
+    "ValueAr": "العنوان"
+  },
+  "Required": {
+    "ValueEn": "Required",
+    "ValueAr": "مطلوب"
+  },
+  "SelectGender": {
+    "ValueEn": "-- Select Gender --",
+    "ValueAr": "-- اختر الجنس --"
+  },
+  "SaveClient": {
+    "ValueEn": "Save Client",
+    "ValueAr": "حفظ العميل"
+  },
+  "CreateClient": {
+    "ValueEn": "Create Client",
+    "ValueAr": "إنشاء عميل"
+  },
+  "EditClient": {
+    "ValueEn": "Edit Client",
+    "ValueAr": "تعديل العميل"
+  },
+  "Clients": {
+    "ValueEn": "Clients",
+    "ValueAr": "العملاء"
+  },
+  "AddNewClient": {
+    "ValueEn": "Add New Client",
+    "ValueAr": "إضافة عميل جديد"
+  },
+  "NoClientsFound": {
+    "ValueEn": "No clients found",
+    "ValueAr": "لم يتم العثور على عملاء"
+  },
+  "Actions": {
+    "ValueEn": "Actions",
+    "ValueAr": "الإجراءات"
+  },
+  "Date": {
+    "ValueEn": "Date",
+    "ValueAr": "التاريخ"
+  },
+  "WeightHistory": {
+    "ValueEn": "Weight History",
+    "ValueAr": "سجل الوزن"
+  },
+  "AddWeightRecord": {
+    "ValueEn": "Add Weight Record",
+    "ValueAr": "إضافة سجل وزن"
+  },
+  "BiochemicalMedicalTests": {
+    "ValueEn": "Biochemical Medical Tests",
+    "ValueAr": "الفحوصات الطبية"
+  },
+  "MedicalData": {
+    "ValueEn": "Medical Data",
+    "ValueAr": "البيانات الطبية"
+  },
+  "AddTest": {
+    "ValueEn": "Add Test",
+    "ValueAr": "إضافة فحص"
+  },
+  "DrugsSupplements": {
+    "ValueEn": "Drugs & Supplements",
+    "ValueAr": "الأدوية والمكملات"
+  },
+  "DrugSupplement": {
+    "ValueEn": "Drug/Supplement",
+    "ValueAr": "دواء/مكمل"
+  },
+  "Add": {
+    "ValueEn": "Add",
+    "ValueAr": "إضافة"
+  },
+  "MedicalHistory": {
+    "ValueEn": "Medical History",
+    "ValueAr": "السجل الطبي"
+  },
+  "MedicalNote": {
+    "ValueEn": "Medical Note",
+    "ValueAr": "ملاحظة طبية"
+  },
+  "AddNote": {
+    "ValueEn": "Add Note",
+    "ValueAr": "إضافة ملاحظة"
+  },
+  "ConfirmDelete": {
+    "ValueEn": "Are you sure you want to delete this record?",
+    "ValueAr": "هل أنت متأكد من حذف هذا السجل؟"
+  },
+  "EnterWeight": {
+    "ValueEn": "Weight (kg)",
+    "ValueAr": "الوزن (كجم)"
+  },
+  "EnterHeight": {
+    "ValueEn": "Height (cm)",
+    "ValueAr": "الطول (سم)"
+  },
+  "EnterMedicalTestData": {
+    "ValueEn": "Enter medical test data",
+    "ValueAr": "أدخل بيانات الفحص الطبي"
+  },
+  "EnterDrugSupplementName": {
+    "ValueEn": "Enter drug or supplement name",
+    "ValueAr": "أدخل اسم الدواء أو المكمل"
+  },
+  "EnterMedicalNote": {
+    "ValueEn": "Enter medical note",
+    "ValueAr": "أدخل ملاحظة طبية"
+  },
+
+
+  // Validations Messages
+  "FullNameEnRequired": {
+    "ValueEn": "English name is required",
+    "ValueAr": "الاسم بالإنجليزية مطلوب"
+  },
+  "FullNameEnMaxLength": {
+    "ValueEn": "English name must not exceed 500 characters",
+    "ValueAr": "الاسم بالإنجليزية يجب ألا يتجاوز 500 حرف"
+  },
+  "FullNameArRequired": {
+    "ValueEn": "Arabic name is required",
+    "ValueAr": "الاسم بالعربية مطلوب"
+  },
+  "FullNameArMaxLength": {
+    "ValueEn": "Arabic name must not exceed 500 characters",
+    "ValueAr": "الاسم بالعربية يجب ألا يتجاوز 500 حرف"
+  },
+  "MobileNumberMaxLength": {
+    "ValueEn": "Mobile number must not exceed 20 characters",
+    "ValueAr": "رقم الجوال يجب ألا يتجاوز 20 حرف"
+  },
+  "MobileNumberInvalidFormat": {
+    "ValueEn": "Invalid mobile number format",
+    "ValueAr": "تنسيق رقم الجوال غير صحيح"
+  },
+  "GenderRequired": {
+    "ValueEn": "Gender is required",
+    "ValueAr": "الجنس مطلوب"
+  },
+  "AddressMaxLength": {
+    "ValueEn": "Address must not exceed 2000 characters",
+    "ValueAr": "العنوان يجب ألا يتجاوز 2000 حرف"
+  },
+  "DateOfBirthRequired": {
+    "ValueEn": "Date of birth is required",
+    "ValueAr": "تاريخ الميلاد مطلوب"
+  },
+  "DateOfBirthMustBePast": {
+    "ValueEn": "Date of birth must be in the past",
+    "ValueAr": "تاريخ الميلاد يجب أن يكون في الماضي"
+  },
+  "HeightRange": {
+    "ValueEn": "Height must be between 0.01 and 999.99",
+    "ValueAr": "الطول يجب أن يكون بين 0.01 و 999.99"
+  },
+  "WeightRange": {
+    "ValueEn": "Weight must be between 0.01 and 999.99",
+    "ValueAr": "الوزن يجب أن يكون بين 0.01 و 999.99"
+  },
+  "MedicalDataRequired": {
+    "ValueEn": "Medical data is required",
+    "ValueAr": "البيانات الطبية مطلوبة"
+  },
+  "MedicalDataMaxLength": {
+    "ValueEn": "Medical data must not exceed 4000 characters",
+    "ValueAr": "البيانات الطبية يجب ألا تتجاوز 4000 حرف"
+  },
+  "DrugSupplementRequired": {
+    "ValueEn": "Drug/Supplement name is required",
+    "ValueAr": "اسم الدواء/المكمل مطلوب"
+  },
+  "DrugSupplementMaxLength": {
+    "ValueEn": "Drug/Supplement name must not exceed 500 characters",
+    "ValueAr": "اسم الدواء/المكمل يجب ألا يتجاوز 500 حرف"
+  },
+  "MedicalNoteRequired": {
+    "ValueEn": "Medical note is required",
+    "ValueAr": "الملاحظة الطبية مطلوبة"
+  },
+  "MedicalNoteMaxLength": {
+    "ValueEn": "Medical note must not exceed 4000 characters",
+    "ValueAr": "الملاحظة الطبية يجب ألا تتجاوز 4000 حرف"
   }
 }
