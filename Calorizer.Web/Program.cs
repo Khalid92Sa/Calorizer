@@ -1,9 +1,12 @@
-﻿using Calorizer.Business.Interfaces;
+﻿using Calorizer.Business.DTOs;
+using Calorizer.Business.DTOs.Validations;
+using Calorizer.Business.Interfaces;
 using Calorizer.Business.Services;
 using Calorizer.DAL.Models;
 using Calorizer.DAL.Repositories;
 using Calorizer.Web.Middleware;
 using Calorizer.Web.Services;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +38,15 @@ builder.Services.AddSingleton<ILocalizationProvider, LocalizationAdapter>();
 
 // Register Localizer - THE MAGIC HAPPENS HERE!
 builder.Services.AddScoped<Localizer>();
+builder.Services.AddScoped<ILookupService, LookupService>();
+builder.Services.AddScoped<IClientService, ClientService>();
+
+// Register FluentValidation Validators
+builder.Services.AddScoped<IValidator<ClientDto>, ClientDtoValidator>();
+builder.Services.AddScoped<IValidator<WeightHistoryDto>, WeightHistoryDtoValidator>();
+builder.Services.AddScoped<IValidator<BiochemicalMedicalTestDto>, BiochemicalMedicalTestDtoValidator>();
+builder.Services.AddScoped<IValidator<DrugsSupplementDto>, DrugsSupplementDtoValidator>();
+builder.Services.AddScoped<IValidator<MedicalHistoryDto>, MedicalHistoryDtoValidator>();
 
 // Add Session support
 builder.Services.AddSession(options =>
