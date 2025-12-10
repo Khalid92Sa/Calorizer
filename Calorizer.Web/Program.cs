@@ -1,9 +1,12 @@
+﻿using Calorizer.Business.DTOs;
+using Calorizer.Business.DTOs.Validations;
 using Calorizer.Business.Interfaces;
 using Calorizer.Business.Services;
-using Calorizer.DAL;
 using Calorizer.DAL.Models;
 using Calorizer.DAL.Repositories;
+using Calorizer.Web.Middleware;
 using Calorizer.Web.Services;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,13 +25,28 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Register Localization Service (Web Layer)
-builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
+builder.Services.AddSingleton<ILocalizationService>(sp =>
+{
+    var env = sp.GetRequiredService<IWebHostEnvironment>();
+    var logger = sp.GetRequiredService<ILogger<LocalizationService>>();
+    var jsonFilePath = Path.Combine(env.ContentRootPath, "Resources", "Localization.json");
+    return new LocalizationService(jsonFilePath, logger);
+});
 
 // Register Localization Provider (Business Layer Interface)
 builder.Services.AddSingleton<ILocalizationProvider, LocalizationAdapter>();
 
-// Register Business Services
-builder.Services.AddScoped<FoodService>();
+// Register Localizer - THE MAGIC HAPPENS HERE!
+builder.Services.AddScoped<Localizer>();
+builder.Services.AddScoped<ILookupService, LookupService>();
+builder.Services.AddScoped<IClientService, ClientService>();
+
+// Register FluentValidation Validators
+builder.Services.AddScoped<IValidator<ClientDto>, ClientDtoValidator>();
+builder.Services.AddScoped<IValidator<WeightHistoryDto>, WeightHistoryDtoValidator>();
+builder.Services.AddScoped<IValidator<BiochemicalMedicalTestDto>, BiochemicalMedicalTestDtoValidator>();
+builder.Services.AddScoped<IValidator<DrugsSupplementDto>, DrugsSupplementDtoValidator>();
+builder.Services.AddScoped<IValidator<MedicalHistoryDto>, MedicalHistoryDtoValidator>();
 
 // Add Session support
 builder.Services.AddSession(options =>
@@ -49,6 +67,11 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+else
+{
+    // ✅ Only this for development - shows detailed errors
+    app.UseDeveloperExceptionPage();
+}
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -56,6 +79,9 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseSession();
+
+// Add Language Middleware AFTER UseSession
+app.UseMiddleware<LanguageMiddleware>();
 
 app.UseAuthorization();
 
