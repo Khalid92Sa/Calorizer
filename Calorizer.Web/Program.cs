@@ -8,6 +8,7 @@ using Calorizer.Web.Middleware;
 using Calorizer.Web.Services;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,12 +42,12 @@ builder.Services.AddScoped<Localizer>();
 builder.Services.AddScoped<ILookupService, LookupService>();
 builder.Services.AddScoped<IClientService, ClientService>();
 
-// Register FluentValidation Validators
-builder.Services.AddScoped<IValidator<ClientDto>, ClientDtoValidator>();
-builder.Services.AddScoped<IValidator<WeightHistoryDto>, WeightHistoryDtoValidator>();
-builder.Services.AddScoped<IValidator<BiochemicalMedicalTestDto>, BiochemicalMedicalTestDtoValidator>();
-builder.Services.AddScoped<IValidator<DrugsSupplementDto>, DrugsSupplementDtoValidator>();
-builder.Services.AddScoped<IValidator<MedicalHistoryDto>, MedicalHistoryDtoValidator>();
+// ✅ DYNAMIC FLUENT VALIDATION REGISTRATION
+// This will automatically register all validators in the Business assembly
+builder.Services.AddValidatorsFromAssembly(Assembly.Load("Calorizer.Business"));
+
+// Register ValidatorFactory for dependency injection
+builder.Services.AddScoped<IValidatorFactory, ServiceProviderValidatorFactory>();
 
 // Add Session support
 builder.Services.AddSession(options =>

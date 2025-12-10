@@ -7,36 +7,80 @@ namespace Calorizer.Business.DTOs.Validations
         public ClientDtoValidator()
         {
             RuleFor(x => x.FullNameEn)
-                .NotEmpty().WithMessage("English name is required")
-                .MaximumLength(500).WithMessage("English name must not exceed 500 characters");
+                .NotEmpty().WithMessage("FullNameEnRequired")
+                .MaximumLength(500).WithMessage("FullNameEnMaxLength");
 
             RuleFor(x => x.FullNameAr)
-                .NotEmpty().WithMessage("Arabic name is required")
-                .MaximumLength(500).WithMessage("Arabic name must not exceed 500 characters");
+                .NotEmpty().WithMessage("FullNameArRequired")
+                .MaximumLength(500).WithMessage("FullNameArMaxLength");
 
             RuleFor(x => x.MobileNumber)
-                .MaximumLength(20).WithMessage("Mobile number must not exceed 20 characters")
-                .Matches(@"^\+?[0-9\s\-()]*$").WithMessage("Invalid mobile number format")
+                .MaximumLength(20).WithMessage("MobileNumberMaxLength")
+                .Matches(@"^\+?[0-9\s\-()]*$").WithMessage("MobileNumberInvalidFormat")
                 .When(x => !string.IsNullOrEmpty(x.MobileNumber));
 
             RuleFor(x => x.GenderId)
-                .GreaterThan(0).WithMessage("Gender is required");
+                .GreaterThan(0).WithMessage("GenderRequired");
 
             RuleFor(x => x.Address)
-                .MaximumLength(2000).WithMessage("Address must not exceed 2000 characters")
+                .MaximumLength(2000).WithMessage("AddressMaxLength")
                 .When(x => !string.IsNullOrEmpty(x.Address));
 
             RuleFor(x => x.DateOfBirth)
-                .NotEmpty().WithMessage("Date of birth is required")
-                .LessThan(DateTime.Today).WithMessage("Date of birth must be in the past");
+                .NotEmpty().WithMessage("DateOfBirthRequired")
+                .LessThan(DateTime.Today).WithMessage("DateOfBirthMustBePast");
 
             RuleFor(x => x.Height)
-                .InclusiveBetween(0.01m, 999.99m).WithMessage("Height must be between 0.01 and 999.99")
+                .InclusiveBetween(0.01m, 999.99m).WithMessage("HeightRange")
                 .When(x => x.Height.HasValue);
 
             RuleFor(x => x.Weight)
-                .InclusiveBetween(0.01m, 999.99m).WithMessage("Weight must be between 0.01 and 999.99")
+                .InclusiveBetween(0.01m, 999.99m).WithMessage("WeightRange")
                 .When(x => x.Weight.HasValue);
+        }
+    }
+
+    public class WeightHistoryDtoValidator : AbstractValidator<WeightHistoryDto>
+    {
+        public WeightHistoryDtoValidator()
+        {
+            RuleFor(x => x.Weight)
+                .InclusiveBetween(0.01m, 999.99m).WithMessage("WeightRange")
+                .When(x => x.Weight.HasValue);
+
+            RuleFor(x => x.Height)
+                .InclusiveBetween(0.01m, 999.99m).WithMessage("HeightRange")
+                .When(x => x.Height.HasValue);
+        }
+    }
+
+    public class BiochemicalMedicalTestDtoValidator : AbstractValidator<BiochemicalMedicalTestDto>
+    {
+        public BiochemicalMedicalTestDtoValidator()
+        {
+            RuleFor(x => x.MedicalData)
+                .NotEmpty().WithMessage("MedicalDataRequired")
+                .MaximumLength(4000).WithMessage("MedicalDataMaxLength");
+        }
+    }
+
+    public class DrugsSupplementDtoValidator : AbstractValidator<DrugsSupplementDto>
+    {
+        public DrugsSupplementDtoValidator()
+        {
+            RuleFor(x => x.Drug)
+                .NotEmpty().WithMessage("DrugSupplementRequired")
+                .MaximumLength(500).WithMessage("DrugSupplementMaxLength");
+        }
+    }
+
+    public class MedicalHistoryDtoValidator : AbstractValidator<MedicalHistoryDto>
+    {
+        public MedicalHistoryDtoValidator()
+        {
+            RuleFor(x => x.MedicalNote)
+                .NotEmpty().WithMessage("MedicalNoteRequired")
+                .MaximumLength(4000).WithMessage("MedicalNoteMaxLength");
         }
     }
 }

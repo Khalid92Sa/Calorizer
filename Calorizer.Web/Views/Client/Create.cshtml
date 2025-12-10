@@ -1,7 +1,7 @@
 ﻿@model Calorizer.Business.DTOs.ClientDto
 
 @{
-    ViewData["Title"] = Model.Id == 0 ? "Create Client" : "Edit Client";
+    ViewData["Title"] = Model.Id == 0 ? Localizer["CreateClient"] : Localizer["EditClient"];
     var isEdit = Model.Id > 0;
 }
 
@@ -21,37 +21,33 @@
                         </div>
                     }
 
-                    <form asp-action="@(isEdit ? "Edit" : "Create")" method="post">
+                    <form id="clientForm" asp-action="@(isEdit ? "Edit" : "Create")" method="post" onsubmit="return ClientModule.submitClientForm('clientForm', '@(isEdit ? Url.Action("Edit") : Url.Action("Create"))')">
                         <input type="hidden" asp-for="Id" />
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        @Html.AntiForgeryToken()
 
                         <div class="row">
-                            <!-- Full Name English -->
                             <div class="col-md-6 mb-3">
-                                <label asp-for="FullNameEn" class="form-label">Full Name (English) *</label>
+                                <label asp-for="FullNameEn" class="form-label">@Localizer["FullNameEn"] *</label>
                                 <input asp-for="FullNameEn" class="form-control" />
                                 <span asp-validation-for="FullNameEn" class="text-danger"></span>
                             </div>
 
-                            <!-- Full Name Arabic -->
                             <div class="col-md-6 mb-3">
-                                <label asp-for="FullNameAr" class="form-label">Full Name (Arabic) *</label>
+                                <label asp-for="FullNameAr" class="form-label">@Localizer["FullNameAr"] *</label>
                                 <input asp-for="FullNameAr" class="form-control" dir="rtl" />
                                 <span asp-validation-for="FullNameAr" class="text-danger"></span>
                             </div>
 
-                            <!-- Mobile Number -->
                             <div class="col-md-6 mb-3">
-                                <label asp-for="MobileNumber" class="form-label">Mobile Number</label>
+                                <label asp-for="MobileNumber" class="form-label">@Localizer["MobileNumber"]</label>
                                 <input asp-for="MobileNumber" class="form-control" />
                                 <span asp-validation-for="MobileNumber" class="text-danger"></span>
                             </div>
 
-                            <!-- Gender -->
                             <div class="col-md-6 mb-3">
-                                <label asp-for="GenderId" class="form-label">Gender *</label>
+                                <label asp-for="GenderId" class="form-label">@Localizer["Gender"] *</label>
                                 <select asp-for="GenderId" class="form-select">
-                                    <option value="">-- Select Gender --</option>
+                                    <option value="">@Localizer["SelectGender"]</option>
                                     @foreach (var gender in Model.Genders)
                                     {
                                         <option value="@gender.Id">@gender.NameEn</option>
@@ -60,30 +56,26 @@
                                 <span asp-validation-for="GenderId" class="text-danger"></span>
                             </div>
 
-                            <!-- Date of Birth -->
                             <div class="col-md-6 mb-3">
-                                <label asp-for="DateOfBirth" class="form-label">Date of Birth *</label>
+                                <label asp-for="DateOfBirth" class="form-label">@Localizer["DateOfBirth"] *</label>
                                 <input asp-for="DateOfBirth" type="date" class="form-control" />
                                 <span asp-validation-for="DateOfBirth" class="text-danger"></span>
                             </div>
 
-                            <!-- Height -->
                             <div class="col-md-3 mb-3">
-                                <label asp-for="Height" class="form-label">Height (cm)</label>
+                                <label asp-for="Height" class="form-label">@Localizer["Height"]</label>
                                 <input asp-for="Height" type="number" step="0.01" class="form-control" />
                                 <span asp-validation-for="Height" class="text-danger"></span>
                             </div>
 
-                            <!-- Weight -->
                             <div class="col-md-3 mb-3">
-                                <label asp-for="Weight" class="form-label">Weight (kg)</label>
+                                <label asp-for="Weight" class="form-label">@Localizer["Weight"]</label>
                                 <input asp-for="Weight" type="number" step="0.01" class="form-control" />
                                 <span asp-validation-for="Weight" class="text-danger"></span>
                             </div>
 
-                            <!-- Address -->
                             <div class="col-md-12 mb-3">
-                                <label asp-for="Address" class="form-label">Address</label>
+                                <label asp-for="Address" class="form-label">@Localizer["Address"]</label>
                                 <textarea asp-for="Address" class="form-control" rows="3"></textarea>
                                 <span asp-validation-for="Address" class="text-danger"></span>
                             </div>
@@ -91,10 +83,10 @@
 
                         <div class="mb-3">
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-save"></i> Save Client
+                                <i class="bi bi-save"></i> @Localizer["SaveClient"]
                             </button>
                             <a asp-action="Index" class="btn btn-secondary">
-                                <i class="bi bi-x-circle"></i> Cancel
+                                <i class="bi bi-x-circle"></i> @Localizer["Cancel"]
                             </a>
                         </div>
                     </form>
@@ -105,28 +97,28 @@
 
                         <!-- Weight History Section -->
                         <div class="mb-4">
-                            <h4 class="mb-3">Weight History</h4>
+                            <h4 class="mb-3">@Localizer["WeightHistory"]</h4>
                             <div class="row mb-3">
                                 <div class="col-md-4">
-                                    <input type="number" id="newWeight" class="form-control" placeholder="Weight (kg)" step="0.01" />
+                                    <input type="number" id="newWeight" class="form-control" placeholder="@Localizer["EnterWeight"]" step="0.01" />
                                 </div>
                                 <div class="col-md-4">
-                                    <input type="number" id="newHeight" class="form-control" placeholder="Height (cm)" step="0.01" />
+                                    <input type="number" id="newHeight" class="form-control" placeholder="@Localizer["EnterHeight"]" step="0.01" />
                                 </div>
                                 <div class="col-md-4">
-                                    <button type="button" class="btn btn-success" onclick="addWeightHistory()">
-                                        <i class="bi bi-plus-circle"></i> Add Weight Record
+                                    <button type="button" class="btn btn-success" onclick="ClientModule.addWeightHistory()">
+                                        <i class="bi bi-plus-circle"></i> @Localizer["AddWeightRecord"]
                                     </button>
                                 </div>
                             </div>
                             <div class="table-responsive">
-                                <table class="table table-striped" id="weightHistoryTable">
+                                <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Date</th>
-                                            <th>Weight (kg)</th>
-                                            <th>Height (cm)</th>
-                                            <th>Actions</th>
+                                            <th>@Localizer["Date"]</th>
+                                            <th>@Localizer["Weight"]</th>
+                                            <th>@Localizer["Height"]</th>
+                                            <th>@Localizer["Actions"]</th>
                                         </tr>
                                     </thead>
                                     <tbody id="weightHistoryBody">
@@ -137,7 +129,7 @@
                                                 <td>@item.Weight</td>
                                                 <td>@item.Height</td>
                                                 <td>
-                                                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteWeightHistory(@item.Id)">
+                                                    <button type="button" class="btn btn-sm btn-danger" onclick="ClientModule.deleteWeightHistory(@item.Id)">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </td>
@@ -150,24 +142,24 @@
 
                         <!-- Biochemical Medical Tests Section -->
                         <div class="mb-4">
-                            <h4 class="mb-3">Biochemical Medical Tests</h4>
+                            <h4 class="mb-3">@Localizer["BiochemicalMedicalTests"]</h4>
                             <div class="row mb-3">
                                 <div class="col-md-10">
-                                    <textarea id="newBiochemicalTest" class="form-control" placeholder="Enter medical test data" rows="2"></textarea>
+                                    <textarea id="newBiochemicalTest" class="form-control" placeholder="@Localizer["EnterMedicalTestData"]" rows="2"></textarea>
                                 </div>
                                 <div class="col-md-2">
-                                    <button type="button" class="btn btn-success" onclick="addBiochemicalTest()">
-                                        <i class="bi bi-plus-circle"></i> Add Test
+                                    <button type="button" class="btn btn-success" onclick="ClientModule.addBiochemicalTest()">
+                                        <i class="bi bi-plus-circle"></i> @Localizer["AddTest"]
                                     </button>
                                 </div>
                             </div>
                             <div class="table-responsive">
-                                <table class="table table-striped" id="biochemicalTestTable">
+                                <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Date</th>
-                                            <th>Medical Data</th>
-                                            <th>Actions</th>
+                                            <th>@Localizer["Date"]</th>
+                                            <th>@Localizer["MedicalData"]</th>
+                                            <th>@Localizer["Actions"]</th>
                                         </tr>
                                     </thead>
                                     <tbody id="biochemicalTestBody">
@@ -177,7 +169,7 @@
                                                 <td>@item.CreatedOn.ToString("dd/MM/yyyy HH:mm")</td>
                                                 <td>@item.MedicalData</td>
                                                 <td>
-                                                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteBiochemicalTest(@item.Id)">
+                                                    <button type="button" class="btn btn-sm btn-danger" onclick="ClientModule.deleteBiochemicalTest(@item.Id)">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </td>
@@ -190,24 +182,24 @@
 
                         <!-- Drugs/Supplements Section -->
                         <div class="mb-4">
-                            <h4 class="mb-3">Drugs & Supplements</h4>
+                            <h4 class="mb-3">@Localizer["DrugsSupplements"]</h4>
                             <div class="row mb-3">
                                 <div class="col-md-10">
-                                    <input type="text" id="newDrugSupplement" class="form-control" placeholder="Enter drug or supplement name" />
+                                    <input type="text" id="newDrugSupplement" class="form-control" placeholder="@Localizer["EnterDrugSupplementName"]" />
                                 </div>
                                 <div class="col-md-2">
-                                    <button type="button" class="btn btn-success" onclick="addDrugsSupplement()">
-                                        <i class="bi bi-plus-circle"></i> Add
+                                    <button type="button" class="btn btn-success" onclick="ClientModule.addDrugsSupplement()">
+                                        <i class="bi bi-plus-circle"></i> @Localizer["Add"]
                                     </button>
                                 </div>
                             </div>
                             <div class="table-responsive">
-                                <table class="table table-striped" id="drugsSupplementTable">
+                                <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Date</th>
-                                            <th>Drug/Supplement</th>
-                                            <th>Actions</th>
+                                            <th>@Localizer["Date"]</th>
+                                            <th>@Localizer["DrugSupplement"]</th>
+                                            <th>@Localizer["Actions"]</th>
                                         </tr>
                                     </thead>
                                     <tbody id="drugsSupplementBody">
@@ -217,7 +209,7 @@
                                                 <td>@item.CreatedOn.ToString("dd/MM/yyyy HH:mm")</td>
                                                 <td>@item.Drug</td>
                                                 <td>
-                                                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteDrugsSupplement(@item.Id)">
+                                                    <button type="button" class="btn btn-sm btn-danger" onclick="ClientModule.deleteDrugsSupplement(@item.Id)">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </td>
@@ -230,24 +222,24 @@
 
                         <!-- Medical History Section -->
                         <div class="mb-4">
-                            <h4 class="mb-3">Medical History</h4>
+                            <h4 class="mb-3">@Localizer["MedicalHistory"]</h4>
                             <div class="row mb-3">
                                 <div class="col-md-10">
-                                    <textarea id="newMedicalHistory" class="form-control" placeholder="Enter medical note" rows="2"></textarea>
+                                    <textarea id="newMedicalHistory" class="form-control" placeholder="@Localizer["EnterMedicalNote"]" rows="2"></textarea>
                                 </div>
                                 <div class="col-md-2">
-                                    <button type="button" class="btn btn-success" onclick="addMedicalHistory()">
-                                        <i class="bi bi-plus-circle"></i> Add Note
+                                    <button type="button" class="btn btn-success" onclick="ClientModule.addMedicalHistory()">
+                                        <i class="bi bi-plus-circle"></i> @Localizer["AddNote"]
                                     </button>
                                 </div>
                             </div>
                             <div class="table-responsive">
-                                <table class="table table-striped" id="medicalHistoryTable">
+                                <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Date</th>
-                                            <th>Medical Note</th>
-                                            <th>Actions</th>
+                                            <th>@Localizer["Date"]</th>
+                                            <th>@Localizer["MedicalNote"]</th>
+                                            <th>@Localizer["Actions"]</th>
                                         </tr>
                                     </thead>
                                     <tbody id="medicalHistoryBody">
@@ -257,7 +249,7 @@
                                                 <td>@item.CreatedOn.ToString("dd/MM/yyyy HH:mm")</td>
                                                 <td>@item.MedicalNote</td>
                                                 <td>
-                                                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteMedicalHistory(@item.Id)">
+                                                    <button type="button" class="btn btn-sm btn-danger" onclick="ClientModule.deleteMedicalHistory(@item.Id)">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </td>
@@ -282,323 +274,8 @@
     @if (isEdit)
     {
         <script>
-            const clientId = @Model.Id;
-
-            // Weight History Functions
-            async function addWeightHistory() {
-                const weight = document.getElementById('newWeight').value;
-                const height = document.getElementById('newHeight').value;
-
-                if (!weight && !height) {
-                    alert('Please enter weight or height');
-                    return;
-                }
-
-                const data = {
-                    clientId: clientId,
-                    weight: weight ? parseFloat(weight) : null,
-                    height: height ? parseFloat(height) : null
-                };
-
-                try {
-                    const response = await fetch('@Url.Action("AddWeightHistory", "Client")', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                        },
-                        body: JSON.stringify(data)
-                    });
-
-                    const result = await response.json();
-                    if (result.success) {
-                        refreshWeightHistoryTable(result.data);
-                        document.getElementById('newWeight').value = '';
-                        document.getElementById('newHeight').value = '';
-                    } else {
-                        alert(result.message);
-                    }
-                } catch (error) {
-                    alert('Error adding weight history: ' + error);
-                }
-            }
-
-            async function deleteWeightHistory(id) {
-                if (!confirm('Are you sure you want to delete this record?')) return;
-
-                try {
-                    const response = await fetch('@Url.Action("DeleteWeightHistory", "Client")', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: `id=${id}&clientId=${clientId}`
-                    });
-
-                    const result = await response.json();
-                    if (result.success) {
-                        refreshWeightHistoryTable(result.data);
-                    } else {
-                        alert(result.message);
-                    }
-                } catch (error) {
-                    alert('Error deleting record: ' + error);
-                }
-            }
-
-            function refreshWeightHistoryTable(data) {
-                const tbody = document.getElementById('weightHistoryBody');
-                tbody.innerHTML = '';
-                data.forEach(item => {
-                    const row = `
-                        <tr>
-                            <td>${new Date(item.createdOn).toLocaleString()}</td>
-                            <td>${item.weight || ''}</td>
-                            <td>${item.height || ''}</td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteWeightHistory(${item.id})">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
-                });
-            }
-
-            // Biochemical Test Functions
-            async function addBiochemicalTest() {
-                const medicalData = document.getElementById('newBiochemicalTest').value;
-
-                if (!medicalData) {
-                    alert('Please enter medical test data');
-                    return;
-                }
-
-                const data = {
-                    clientId: clientId,
-                    medicalData: medicalData
-                };
-
-                try {
-                    const response = await fetch('@Url.Action("AddBiochemicalTest", "Client")', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                        },
-                        body: JSON.stringify(data)
-                    });
-
-                    const result = await response.json();
-                    if (result.success) {
-                        refreshBiochemicalTestTable(result.data);
-                        document.getElementById('newBiochemicalTest').value = '';
-                    } else {
-                        alert(result.message);
-                    }
-                } catch (error) {
-                    alert('Error adding test: ' + error);
-                }
-            }
-
-            async function deleteBiochemicalTest(id) {
-                if (!confirm('Are you sure you want to delete this test?')) return;
-
-                try {
-                    const response = await fetch('@Url.Action("DeleteBiochemicalTest", "Client")', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: `id=${id}&clientId=${clientId}`
-                    });
-
-                    const result = await response.json();
-                    if (result.success) {
-                        refreshBiochemicalTestTable(result.data);
-                    } else {
-                        alert(result.message);
-                    }
-                } catch (error) {
-                    alert('Error deleting test: ' + error);
-                }
-            }
-
-            function refreshBiochemicalTestTable(data) {
-                const tbody = document.getElementById('biochemicalTestBody');
-                tbody.innerHTML = '';
-                data.forEach(item => {
-                    const row = `
-                        <tr>
-                            <td>${new Date(item.createdOn).toLocaleString()}</td>
-                            <td>${item.medicalData}</td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteBiochemicalTest(${item.id})">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
-                });
-            }
-
-            // Drugs/Supplements Functions
-            async function addDrugsSupplement() {
-                const drug = document.getElementById('newDrugSupplement').value;
-
-                if (!drug) {
-                    alert('Please enter drug or supplement name');
-                    return;
-                }
-
-                const data = {
-                    clientId: clientId,
-                    drug: drug
-                };
-
-                try {
-                    const response = await fetch('@Url.Action("AddDrugsSupplement", "Client")', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                        },
-                        body: JSON.stringify(data)
-                    });
-
-                    const result = await response.json();
-                    if (result.success) {
-                        refreshDrugsSupplementTable(result.data);
-                        document.getElementById('newDrugSupplement').value = '';
-                    } else {
-                        alert(result.message);
-                    }
-                } catch (error) {
-                    alert('Error adding drug/supplement: ' + error);
-                }
-            }
-
-            async function deleteDrugsSupplement(id) {
-                if (!confirm('Are you sure you want to delete this item?')) return;
-
-                try {
-                    const response = await fetch('@Url.Action("DeleteDrugsSupplement", "Client")', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: `id=${id}&clientId=${clientId}`
-                    });
-
-                    const result = await response.json();
-                    if (result.success) {
-                        refreshDrugsSupplementTable(result.data);
-                    } else {
-                        alert(result.message);
-                    }
-                } catch (error) {
-                    alert('Error deleting item: ' + error);
-                }
-            }
-
-            function refreshDrugsSupplementTable(data) {
-                const tbody = document.getElementById('drugsSupplementBody');
-                tbody.innerHTML = '';
-                data.forEach(item => {
-                    const row = `
-                        <tr>
-                            <td>${new Date(item.createdOn).toLocaleString()}</td>
-                            <td>${item.drug}</td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteDrugsSupplement(${item.id})">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
-                });
-            }
-
-            // Medical History Functions
-            async function addMedicalHistory() {
-                const medicalNote = document.getElementById('newMedicalHistory').value;
-
-                if (!medicalNote) {
-                    alert('Please enter medical note');
-                    return;
-                }
-
-                const data = {
-                    clientId: clientId,
-                    medicalNote: medicalNote
-                };
-
-                try {
-                    const response = await fetch('@Url.Action("AddMedicalHistory", "Client")', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                        },
-                        body: JSON.stringify(data)
-                    });
-
-                    const result = await response.json();
-                    if (result.success) {
-                        refreshMedicalHistoryTable(result.data);
-                        document.getElementById('newMedicalHistory').value = '';
-                    } else {
-                        alert(result.message);
-                    }
-                } catch (error) {
-                    alert('Error adding medical note: ' + error);
-                }
-            }
-
-            async function deleteMedicalHistory(id) {
-                if (!confirm('Are you sure you want to delete this note?')) return;
-
-                try {
-                    const response = await fetch('@Url.Action("DeleteMedicalHistory", "Client")', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: `id=${id}&clientId=${clientId}`
-                    });
-
-                    const result = await response.json();
-                    if (result.success) {
-                        refreshMedicalHistoryTable(result.data);
-                    } else {
-                        alert(result.message);
-                    }
-                } catch (error) {
-                    alert('Error deleting note: ' + error);
-                }
-            }
-
-            function refreshMedicalHistoryTable(data) {
-                const tbody = document.getElementById('medicalHistoryBody');
-                tbody.innerHTML = '';
-                data.forEach(item => {
-                    const row = `
-                        <tr>
-                            <td>${new Date(item.createdOn).toLocaleString()}</td>
-                            <td>${item.medicalNote}</td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteMedicalHistory(${item.id})">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
-                });
-            }
+            // Initialize the ClientModule with client ID and translations
+            ClientModule.init(@Model.Id, @Html.Raw(Json.Serialize(Localizer.GetAll())));
         </script>
     }
 }
