@@ -60,7 +60,12 @@ namespace Calorizer.Business.Services
                 }
 
                 clientDto.Id = client.Id;
-                return new Response<ClientDto>(clientDto);
+                return new Response<ClientDto>()
+                {
+                    Succeeded = true,
+                    Data = clientDto,
+                    StatusCode = (int)HttpStatusCode.OK
+                };
             }
             catch (Exception ex)
             {

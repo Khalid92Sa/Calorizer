@@ -13,15 +13,7 @@
                     <h3 class="card-title">@ViewData["Title"]</h3>
                 </div>
                 <div class="card-body">
-                    @if (TempData["SuccessMessage"] != null)
-                    {
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            @TempData["SuccessMessage"]
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    }
-
-                    <form id="clientForm" asp-action="@(isEdit ? "Edit" : "Create")" method="post" onsubmit="return ClientModule.submitClientForm('clientForm', '@(isEdit ? Url.Action("Edit") : Url.Action("Create"))')">
+                    <form id="clientForm" asp-action="CreateOrUpdate" method="post">
                         <input type="hidden" asp-for="Id" />
                         @Html.AntiForgeryToken()
 
@@ -29,19 +21,19 @@
                             <div class="col-md-6 mb-3">
                                 <label asp-for="FullNameEn" class="form-label">@Localizer["FullNameEn"] *</label>
                                 <input asp-for="FullNameEn" class="form-control" />
-                                <span asp-validation-for="FullNameEn" class="text-danger"></span>
+                                <span asp-validation-for="FullNameEn" data-valmsg-for="FullNameEn" class="text-danger field-validation-valid"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label asp-for="FullNameAr" class="form-label">@Localizer["FullNameAr"] *</label>
+                                <label asp-for="FullNameAr" class="form-label">@Localizer["FullNameAr"]</label>
                                 <input asp-for="FullNameAr" class="form-control" dir="rtl" />
-                                <span asp-validation-for="FullNameAr" class="text-danger"></span>
+                                <span asp-validation-for="FullNameAr" data-valmsg-for="FullNameAr" class="text-danger field-validation-valid"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label asp-for="MobileNumber" class="form-label">@Localizer["MobileNumber"]</label>
                                 <input asp-for="MobileNumber" class="form-control" />
-                                <span asp-validation-for="MobileNumber" class="text-danger"></span>
+                                <span asp-validation-for="MobileNumber" data-valmsg-for="MobileNumber" class="text-danger field-validation-valid"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
@@ -53,36 +45,37 @@
                                         <option value="@gender.Id">@gender.NameEn</option>
                                     }
                                 </select>
-                                <span asp-validation-for="GenderId" class="text-danger"></span>
+                                <span asp-validation-for="GenderId" data-valmsg-for="GenderId" class="text-danger field-validation-valid"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label asp-for="DateOfBirth" class="form-label">@Localizer["DateOfBirth"] *</label>
                                 <input asp-for="DateOfBirth" type="date" class="form-control" />
-                                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                                <span asp-validation-for="DateOfBirth" data-valmsg-for="DateOfBirth" class="text-danger field-validation-valid"></span>
                             </div>
 
                             <div class="col-md-3 mb-3">
-                                <label asp-for="Height" class="form-label">@Localizer["Height"]</label>
+                                <label asp-for="Height" class="form-label">@Localizer["Height"] *</label>
                                 <input asp-for="Height" type="number" step="0.01" class="form-control" />
-                                <span asp-validation-for="Height" class="text-danger"></span>
+                                <span asp-validation-for="Height" data-valmsg-for="Height" class="text-danger field-validation-valid"></span>
                             </div>
 
                             <div class="col-md-3 mb-3">
-                                <label asp-for="Weight" class="form-label">@Localizer["Weight"]</label>
+                                <label asp-for="Weight" class="form-label">@Localizer["Weight"] *</label>
                                 <input asp-for="Weight" type="number" step="0.01" class="form-control" />
-                                <span asp-validation-for="Weight" class="text-danger"></span>
+                                <span asp-validation-for="Weight" data-valmsg-for="Weight" class="text-danger field-validation-valid"></span>
                             </div>
+
 
                             <div class="col-md-12 mb-3">
                                 <label asp-for="Address" class="form-label">@Localizer["Address"]</label>
                                 <textarea asp-for="Address" class="form-control" rows="3"></textarea>
-                                <span asp-validation-for="Address" class="text-danger"></span>
+                                <span asp-validation-for="Address" data-valmsg-for="Address" class="text-danger field-validation-valid"></span>
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="button" class="btn btn-primary" onclick="ClientModule.createOrUpdate()">
                                 <i class="bi bi-save"></i> @Localizer["SaveClient"]
                             </button>
                             <a asp-action="Index" class="btn btn-secondary">
@@ -267,15 +260,8 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-
-    @if (isEdit)
-    {
-        <script>
-            // Initialize the ClientModule with client ID and translations
-            ClientModule.init(@Model.Id, @Html.Raw(Json.Serialize(Localizer.GetAll())));
-        </script>
-    }
+    <script>
+        // Initialize the ClientModule with client ID and translations
+        ClientModule.init(@Model.Id, @Html.Raw(Json.Serialize(Localizer.GetAll())));
+    </script>
 }

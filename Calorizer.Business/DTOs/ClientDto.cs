@@ -10,7 +10,7 @@ namespace Calorizer.Business.DTOs
     {
         public int Id { get; set; }
         public string FullNameEn { get; set; } = string.Empty;
-        public string FullNameAr { get; set; } = string.Empty;
+        public string? FullNameAr { get; set; }
         public string? MobileNumber { get; set; }
         public int GenderId { get; set; }
         public string? Address { get; set; }

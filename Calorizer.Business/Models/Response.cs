@@ -11,7 +11,6 @@ namespace Calorizer.Business.Models
 
         public Response()
         {
-            Succeeded = true;
             StatusCode = (int)HttpStatusCode.OK;
         }
 

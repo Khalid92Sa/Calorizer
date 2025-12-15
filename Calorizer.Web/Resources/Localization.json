@@ -306,6 +306,14 @@
     "ValueEn": "Date of birth must be in the past",
     "ValueAr": "تاريخ الميلاد يجب أن يكون في الماضي"
   },
+  "HeightRequired": {
+    "ValueEn": "Height is required",
+    "ValueAr": "الطول مطلوب"
+  },
+  "WeightRequired": {
+    "ValueEn": "Weight is required",
+    "ValueAr": "الوزن مطلوب"
+  },
   "HeightRange": {
     "ValueEn": "Height must be between 0.01 and 999.99",
     "ValueAr": "الطول يجب أن يكون بين 0.01 و 999.99"

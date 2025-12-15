@@ -9,7 +9,7 @@ public partial class Client
 
     public string FullNameEn { get; set; } = null!;
 
-    public string FullNameAr { get; set; } = null!;
+    public string? FullNameAr { get; set; }
 
     public string? MobileNumber { get; set; }
 

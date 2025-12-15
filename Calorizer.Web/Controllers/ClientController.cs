@@ -40,47 +40,6 @@ namespace Calorizer.Web.Controllers
             return View(model);
         }
 
-        // POST: Client/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ClientDto model)
-        {
-            try
-            {
-                int userId = 1; // TODO: Get actual user ID from authentication
-
-                var result = await _clientService.CreateClientAsync(model, userId);
-
-                if (result.Succeeded)
-                {
-                    string msg = _localizer["ClientCreatedSuccessfully"];
-                    return Json(new
-                    {
-                        isSuccess = true,
-                        resultCode = result.StatusCode,
-                        msg = msg,
-                        redirectUrl = Url.Action(nameof(Edit), new { id = result.Data?.Id })
-                    });
-                }
-
-                return Json(new
-                {
-                    isSuccess = false,
-                    resultCode = result.StatusCode,
-                    brokenRules = result.BrokenRules,
-                    msg = _localizer[result.Message]
-                });
-            }
-            catch (Exception ex)
-            {
-                return Json(new
-                {
-                    isSuccess = false,
-                    msg = _localizer["ErrorOccurred"]
-                });
-            }
-        }
-
         // GET: Client/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
@@ -96,34 +55,39 @@ namespace Calorizer.Web.Controllers
             client.DrugsSupplements = await _clientService.GetDrugsSupplementsAsync(id);
             client.MedicalHistories = await _clientService.GetMedicalHistoriesAsync(id);
 
-            return View(client);
+            return View("Create", client);
         }
 
-        // POST: Client/Edit/5
+        // POST: Client/CreateOrUpdate
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(ClientDto model)
+        public async Task<IActionResult> CreateOrUpdate(ClientDto model)
         {
             try
             {
                 int userId = 1; // TODO: Get actual user ID from authentication
 
-                var result = await _clientService.UpdateClientAsync(model, userId);
+                // Determine if this is Create or Update based on Id
+                var result = model.Id > 0
+                    ? await _clientService.UpdateClientAsync(model, userId)
+                    : await _clientService.CreateClientAsync(model, userId);
 
                 if (result.Succeeded)
                 {
-                    string msg = _localizer["ClientUpdatedSuccessfully"];
+                    var message = model.Id > 0
+                        ? _localizer["ClientUpdatedSuccessfully"]
+                        : _localizer["ClientCreatedSuccessfully"];
+
                     return Json(new
                     {
-                        isSuccess = true,
-                        resultCode = result.StatusCode,
-                        msg = msg
+                        resultCode = 200,
+                        msg = message,
+                        redirectUrl = model.Id > 0 ? null : Url.Action(nameof(Edit), new { id = result.Data?.Id })
                     });
                 }
 
                 return Json(new
                 {
-                    isSuccess = false,
                     resultCode = result.StatusCode,
                     brokenRules = result.BrokenRules,
                     msg = _localizer[result.Message]
@@ -133,7 +97,7 @@ namespace Calorizer.Web.Controllers
             {
                 return Json(new
                 {
-                    isSuccess = false,
+                    resultCode = 500,
                     msg = _localizer["ErrorOccurred"]
                 });
             }

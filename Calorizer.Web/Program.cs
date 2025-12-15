@@ -38,7 +38,14 @@ builder.Services.AddSingleton<ILocalizationService>(sp =>
 builder.Services.AddSingleton<ILocalizationProvider, LocalizationAdapter>();
 
 // Register Localizer - THE MAGIC HAPPENS HERE!
-builder.Services.AddScoped<Localizer>();
+builder.Services.AddScoped<Localizer>(sp =>
+{
+    var localizationProvider = sp.GetRequiredService<ILocalizationProvider>();
+    var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
+    var logger = sp.GetRequiredService<ILogger<Localizer>>();
+    return new Localizer(localizationProvider, httpContextAccessor, logger);
+});
+
 builder.Services.AddScoped<ILookupService, LookupService>();
 builder.Services.AddScoped<IClientService, ClientService>();
 
@@ -88,6 +95,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Client}/{action=Create}/{id?}");
 
 app.Run();

@@ -26,11 +26,31 @@ namespace Calorizer.Business.Services
                 if (File.Exists(_jsonFilePath))
                 {
                     var json = File.ReadAllText(_jsonFilePath);
-                    _translations = JsonSerializer.Deserialize<Dictionary<string, LocalizationEntry>>(json,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
-                        ?? new Dictionary<string, LocalizationEntry>();
 
-                    _logger?.LogInformation($"Loaded {_translations.Count} translations from {_jsonFilePath}");
+                    // Try to deserialize directly as the dictionary
+                    var tempTranslations = JsonSerializer.Deserialize<Dictionary<string, LocalizationEntry>>(json,
+                        new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true,
+                            ReadCommentHandling = JsonCommentHandling.Skip,
+                            AllowTrailingCommas = true
+                        });
+
+                    if (tempTranslations != null)
+                    {
+                        _translations = tempTranslations;
+                        _logger?.LogInformation($"Loaded {_translations.Count} translations from {_jsonFilePath}");
+
+                        // Debug: Log first few keys
+                        foreach (var key in _translations.Keys.Take(3))
+                        {
+                            _logger?.LogInformation($"Sample key: {key}, ValueEn: {_translations[key].ValueEn}, ValueAr: {_translations[key].ValueAr}");
+                        }
+                    }
+                    else
+                    {
+                        _logger?.LogWarning($"Failed to deserialize translations from {_jsonFilePath}");
+                    }
                 }
                 else
                 {
@@ -47,19 +67,25 @@ namespace Calorizer.Business.Services
         public string GetValue(string key, string language = "en")
         {
             if (string.IsNullOrEmpty(key))
+            {
+                _logger?.LogWarning("GetValue called with empty key");
                 return string.Empty;
+            }
 
             if (_translations.TryGetValue(key, out var entry))
             {
-                return language.ToLower() switch
+                var value = language.ToLower() switch
                 {
                     "ar" => entry.ValueAr,
                     "en" => entry.ValueEn,
                     _ => entry.ValueEn
                 };
+
+                _logger?.LogDebug($"GetValue: Key={key}, Language={language}, Value={value}");
+                return value;
             }
 
-            _logger?.LogWarning($"Translation key not found: {key}");
+            _logger?.LogWarning($"Translation key not found: {key}, Language: {language}");
             return key; // Return the key itself if not found
         }
 
