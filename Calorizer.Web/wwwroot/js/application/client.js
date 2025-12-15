@@ -115,10 +115,33 @@ const ClientModule = (function () {
                             window.location = data.redirectUrl;
                         }, 1500);
                     } else {
-                        // Reload page after successful update to show new weight history record
-                        setTimeout(function () {
-                            window.location.reload();
-                        }, 1500);
+                        // If weight/height was updated, refresh the weight history section
+                        fullWeightHistory = []; // Clear cache
+
+                        $.ajax({
+                            type: 'GET',
+                            url: '/Client/GetWeightHistories',
+                            data: { clientId: clientId },
+                            success: function (historyData) {
+                                fullWeightHistory = historyData;
+
+                                // Show only first 5 records
+                                refreshWeightHistoryTable(historyData.slice(0, 5));
+
+                                // Update badge count
+                                $('#weightHistoryCollapse').prev().find('.badge').text(historyData.length);
+
+                                // Show/hide pagination button
+                                if (historyData.length > 5) {
+                                    $('#weightHistoryPagination').show();
+                                } else {
+                                    $('#weightHistoryPagination').hide();
+                                }
+
+                                // Expand the weight history section
+                                $('#weightHistoryCollapse').collapse('show');
+                            }
+                        });
                     }
                 }
                 else {
@@ -158,6 +181,12 @@ const ClientModule = (function () {
         }
     }
 
+    function showLessWeightHistory() {
+        refreshWeightHistoryTable(fullWeightHistory.slice(0, 5));
+        $('#weightHistoryPagination').show();
+        $('#weightHistoryShowLess').hide();
+    }
+
     function refreshWeightHistoryTable(data) {
         const tbody = $('#weightHistoryBody');
         tbody.empty();
@@ -172,6 +201,13 @@ const ClientModule = (function () {
             `;
             tbody.append(row);
         });
+
+        // Show "Show Less" button if displaying all records
+        if (fullWeightHistory.length > 5 && data.length === fullWeightHistory.length) {
+            $('#weightHistoryShowLess').show();
+        } else {
+            $('#weightHistoryShowLess').hide();
+        }
     }
 
     // =============================
@@ -198,15 +234,23 @@ const ClientModule = (function () {
             contentType: 'application/json',
             success: function (result) {
                 if (result.success) {
-                    fullBiochemicalTests = []; // Clear cache
+                    fullBiochemicalTests = result.data; // Store full data
                     refreshBiochemicalTestTable(result.data.slice(0, 5));
                     $('#newBiochemicalTest').val('');
                     showMessage(result.msg || t('BiochemicalTestAdded'));
 
+                    // Update badge count
+                    $('#biochemicalTestCollapse').prev().find('.badge').text(result.data.length);
+
                     // Show pagination if more than 5 records
                     if (result.data.length > 5) {
                         $('#biochemicalTestPagination').show();
+                    } else {
+                        $('#biochemicalTestPagination').hide();
                     }
+
+                    // Expand the section to show the new data
+                    $('#biochemicalTestCollapse').collapse('show');
                 } else {
                     if (result.brokenRules && result.brokenRules.length > 0) {
                         const errors = result.brokenRules.map(r => r.message).join('<br>');
@@ -231,9 +275,12 @@ const ClientModule = (function () {
             data: { id: id, clientId: clientId },
             success: function (result) {
                 if (result.success) {
-                    fullBiochemicalTests = []; // Clear cache
+                    fullBiochemicalTests = result.data; // Store full data
                     refreshBiochemicalTestTable(result.data.slice(0, 5));
                     showMessage(result.msg || t('BiochemicalTestDeleted'));
+
+                    // Update badge count
+                    $('#biochemicalTestCollapse').prev().find('.badge').text(result.data.length);
 
                     // Update pagination visibility
                     if (result.data.length > 5) {
@@ -272,6 +319,12 @@ const ClientModule = (function () {
         }
     }
 
+    function showLessBiochemicalTests() {
+        refreshBiochemicalTestTable(fullBiochemicalTests.slice(0, 5));
+        $('#biochemicalTestPagination').show();
+        $('#biochemicalTestShowLess').hide();
+    }
+
     function refreshBiochemicalTestTable(data) {
         const tbody = $('#biochemicalTestBody');
         tbody.empty();
@@ -290,6 +343,13 @@ const ClientModule = (function () {
             `;
             tbody.append(row);
         });
+
+        // Show "Show Less" button if displaying all records
+        if (fullBiochemicalTests.length > 5 && data.length === fullBiochemicalTests.length) {
+            $('#biochemicalTestShowLess').show();
+        } else {
+            $('#biochemicalTestShowLess').hide();
+        }
     }
 
     // =============================
@@ -316,14 +376,22 @@ const ClientModule = (function () {
             contentType: 'application/json',
             success: function (result) {
                 if (result.success) {
-                    fullDrugsSupplements = []; // Clear cache
+                    fullDrugsSupplements = result.data; // Store full data
                     refreshDrugsSupplementTable(result.data.slice(0, 5));
                     $('#newDrugSupplement').val('');
                     showMessage(result.msg || t('DrugsSupplementAdded'));
 
+                    // Update badge count
+                    $('#drugsSupplementCollapse').prev().find('.badge').text(result.data.length);
+
                     if (result.data.length > 5) {
                         $('#drugsSupplementPagination').show();
+                    } else {
+                        $('#drugsSupplementPagination').hide();
                     }
+
+                    // Expand the section to show the new data
+                    $('#drugsSupplementCollapse').collapse('show');
                 } else {
                     if (result.brokenRules && result.brokenRules.length > 0) {
                         const errors = result.brokenRules.map(r => r.message).join('<br>');
@@ -348,9 +416,12 @@ const ClientModule = (function () {
             data: { id: id, clientId: clientId },
             success: function (result) {
                 if (result.success) {
-                    fullDrugsSupplements = []; // Clear cache
+                    fullDrugsSupplements = result.data; // Store full data
                     refreshDrugsSupplementTable(result.data.slice(0, 5));
                     showMessage(result.msg || t('DrugsSupplementDeleted'));
+
+                    // Update badge count
+                    $('#drugsSupplementCollapse').prev().find('.badge').text(result.data.length);
 
                     if (result.data.length > 5) {
                         $('#drugsSupplementPagination').show();
@@ -388,6 +459,12 @@ const ClientModule = (function () {
         }
     }
 
+    function showLessDrugsSupplements() {
+        refreshDrugsSupplementTable(fullDrugsSupplements.slice(0, 5));
+        $('#drugsSupplementPagination').show();
+        $('#drugsSupplementShowLess').hide();
+    }
+
     function refreshDrugsSupplementTable(data) {
         const tbody = $('#drugsSupplementBody');
         tbody.empty();
@@ -406,6 +483,13 @@ const ClientModule = (function () {
             `;
             tbody.append(row);
         });
+
+        // Show "Show Less" button if displaying all records
+        if (fullDrugsSupplements.length > 5 && data.length === fullDrugsSupplements.length) {
+            $('#drugsSupplementShowLess').show();
+        } else {
+            $('#drugsSupplementShowLess').hide();
+        }
     }
 
     // =============================
@@ -432,14 +516,22 @@ const ClientModule = (function () {
             contentType: 'application/json',
             success: function (result) {
                 if (result.success) {
-                    fullMedicalHistory = []; // Clear cache
+                    fullMedicalHistory = result.data; // Store full data
                     refreshMedicalHistoryTable(result.data.slice(0, 5));
                     $('#newMedicalHistory').val('');
                     showMessage(result.msg || t('MedicalHistoryAdded'));
 
+                    // Update badge count
+                    $('#medicalHistoryCollapse').prev().find('.badge').text(result.data.length);
+
                     if (result.data.length > 5) {
                         $('#medicalHistoryPagination').show();
+                    } else {
+                        $('#medicalHistoryPagination').hide();
                     }
+
+                    // Expand the section to show the new data
+                    $('#medicalHistoryCollapse').collapse('show');
                 } else {
                     if (result.brokenRules && result.brokenRules.length > 0) {
                         const errors = result.brokenRules.map(r => r.message).join('<br>');
@@ -464,9 +556,12 @@ const ClientModule = (function () {
             data: { id: id, clientId: clientId },
             success: function (result) {
                 if (result.success) {
-                    fullMedicalHistory = []; // Clear cache
+                    fullMedicalHistory = result.data; // Store full data
                     refreshMedicalHistoryTable(result.data.slice(0, 5));
                     showMessage(result.msg || t('MedicalHistoryDeleted'));
+
+                    // Update badge count
+                    $('#medicalHistoryCollapse').prev().find('.badge').text(result.data.length);
 
                     if (result.data.length > 5) {
                         $('#medicalHistoryPagination').show();
@@ -504,6 +599,12 @@ const ClientModule = (function () {
         }
     }
 
+    function showLessMedicalHistory() {
+        refreshMedicalHistoryTable(fullMedicalHistory.slice(0, 5));
+        $('#medicalHistoryPagination').show();
+        $('#medicalHistoryShowLess').hide();
+    }
+
     function refreshMedicalHistoryTable(data) {
         const tbody = $('#medicalHistoryBody');
         tbody.empty();
@@ -522,6 +623,13 @@ const ClientModule = (function () {
             `;
             tbody.append(row);
         });
+
+        // Show "Show Less" button if displaying all records
+        if (fullMedicalHistory.length > 5 && data.length === fullMedicalHistory.length) {
+            $('#medicalHistoryShowLess').show();
+        } else {
+            $('#medicalHistoryShowLess').hide();
+        }
     }
 
     // Public API
@@ -529,15 +637,19 @@ const ClientModule = (function () {
         init: init,
         createOrUpdate: createOrUpdate,
         loadMoreWeightHistory: loadMoreWeightHistory,
+        showLessWeightHistory: showLessWeightHistory,
         addBiochemicalTest: addBiochemicalTest,
         deleteBiochemicalTest: deleteBiochemicalTest,
         loadMoreBiochemicalTests: loadMoreBiochemicalTests,
+        showLessBiochemicalTests: showLessBiochemicalTests,
         addDrugsSupplement: addDrugsSupplement,
         deleteDrugsSupplement: deleteDrugsSupplement,
         loadMoreDrugsSupplements: loadMoreDrugsSupplements,
+        showLessDrugsSupplements: showLessDrugsSupplements,
         addMedicalHistory: addMedicalHistory,
         deleteMedicalHistory: deleteMedicalHistory,
-        loadMoreMedicalHistory: loadMoreMedicalHistory
+        loadMoreMedicalHistory: loadMoreMedicalHistory,
+        showLessMedicalHistory: showLessMedicalHistory
     };
 })();
 

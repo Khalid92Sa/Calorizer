@@ -122,10 +122,15 @@
                                 {
                                     <div class="text-center" id="weightHistoryPagination">
                                         <button type="button" class="btn btn-link" onclick="ClientModule.loadMoreWeightHistory()">
-                                            @Localizer["ShowMore"]...
+                                            <i class="bi bi-chevron-down"></i> @Localizer["ShowMore"]
                                         </button>
                                     </div>
                                 }
+                                <div class="text-center" id="weightHistoryShowLess" style="display: none;">
+                                    <button type="button" class="btn btn-link" onclick="ClientModule.showLessWeightHistory()">
+                                        <i class="bi bi-chevron-up"></i> @Localizer["ShowLess"]
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -178,10 +183,15 @@
                                 {
                                     <div class="text-center" id="biochemicalTestPagination">
                                         <button type="button" class="btn btn-link" onclick="ClientModule.loadMoreBiochemicalTests()">
-                                            @Localizer["ShowMore"]...
+                                            <i class="bi bi-chevron-down"></i> @Localizer["ShowMore"]
                                         </button>
                                     </div>
                                 }
+                                <div class="text-center" id="biochemicalTestShowLess" style="display: none;">
+                                    <button type="button" class="btn btn-link" onclick="ClientModule.showLessBiochemicalTests()">
+                                        <i class="bi bi-chevron-up"></i> @Localizer["ShowLess"]
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -234,10 +244,15 @@
                                 {
                                     <div class="text-center" id="drugsSupplementPagination">
                                         <button type="button" class="btn btn-link" onclick="ClientModule.loadMoreDrugsSupplements()">
-                                            @Localizer["ShowMore"]...
+                                            <i class="bi bi-chevron-down"></i> @Localizer["ShowMore"]
                                         </button>
                                     </div>
                                 }
+                                <div class="text-center" id="drugsSupplementShowLess" style="display: none;">
+                                    <button type="button" class="btn btn-link" onclick="ClientModule.showLessDrugsSupplements()">
+                                        <i class="bi bi-chevron-up"></i> @Localizer["ShowLess"]
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -290,10 +305,15 @@
                                 {
                                     <div class="text-center" id="medicalHistoryPagination">
                                         <button type="button" class="btn btn-link" onclick="ClientModule.loadMoreMedicalHistory()">
-                                            @Localizer["ShowMore"]...
+                                            <i class="bi bi-chevron-down"></i> @Localizer["ShowMore"]
                                         </button>
                                     </div>
                                 }
+                                <div class="text-center" id="medicalHistoryShowLess" style="display: none;">
+                                    <button type="button" class="btn btn-link" onclick="ClientModule.showLessMedicalHistory()">
+                                        <i class="bi bi-chevron-up"></i> @Localizer["ShowLess"]
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     }
