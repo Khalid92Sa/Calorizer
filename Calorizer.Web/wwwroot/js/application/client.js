@@ -5,6 +5,12 @@ const ClientModule = (function () {
     let clientId = 0;
     let translations = {};
 
+    // Store full data for each section
+    let fullWeightHistory = [];
+    let fullBiochemicalTests = [];
+    let fullDrugsSupplements = [];
+    let fullMedicalHistory = [];
+
     // Initialize module
     function init(id, localization) {
         clientId = id;
@@ -108,6 +114,11 @@ const ClientModule = (function () {
                         setTimeout(function () {
                             window.location = data.redirectUrl;
                         }, 1500);
+                    } else {
+                        // Reload page after successful update to show new weight history record
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 1500);
                     }
                 }
                 else {
@@ -121,69 +132,30 @@ const ClientModule = (function () {
     }
 
     // =============================
-    // WEIGHT HISTORY
+    // WEIGHT HISTORY - PAGINATION ONLY
     // =============================
 
-    function addWeightHistory() {
-        const weight = $('#newWeight').val();
-        const height = $('#newHeight').val();
-
-        if (!weight && !height) {
-            showMessage(t('EnterWeight') + ' ' + t('Required'), false);
-            return;
+    function loadMoreWeightHistory() {
+        if (fullWeightHistory.length > 0) {
+            // Already loaded, just toggle display
+            refreshWeightHistoryTable(fullWeightHistory);
+            $('#weightHistoryPagination').hide();
+        } else {
+            // Fetch all data from server
+            $.ajax({
+                type: 'GET',
+                url: '/Client/GetWeightHistories',
+                data: { clientId: clientId },
+                success: function (data) {
+                    fullWeightHistory = data;
+                    refreshWeightHistoryTable(data);
+                    $('#weightHistoryPagination').hide();
+                },
+                error: function () {
+                    showMessage(t('ErrorOccurred'), false);
+                }
+            });
         }
-
-        const data = {
-            clientId: clientId,
-            weight: weight ? parseFloat(weight) : null,
-            height: height ? parseFloat(height) : null
-        };
-
-        $.ajax({
-            type: 'POST',
-            url: '/Client/AddWeightHistory',
-            data: JSON.stringify(data),
-            contentType: 'application/json',
-            success: function (result) {
-                if (result.success) {
-                    refreshWeightHistoryTable(result.data);
-                    $('#newWeight').val('');
-                    $('#newHeight').val('');
-                    showMessage(result.msg || t('WeightHistoryAdded'));
-                } else {
-                    if (result.brokenRules && result.brokenRules.length > 0) {
-                        const errors = result.brokenRules.map(r => r.message).join('<br>');
-                        showMessage(errors, false);
-                    } else {
-                        showMessage(result.message, false);
-                    }
-                }
-            },
-            error: function () {
-                showMessage(t('ErrorOccurred'), false);
-            }
-        });
-    }
-
-    function deleteWeightHistory(id) {
-        if (!confirm(t('ConfirmDelete'))) return;
-
-        $.ajax({
-            type: 'POST',
-            url: '/Client/DeleteWeightHistory',
-            data: { id: id, clientId: clientId },
-            success: function (result) {
-                if (result.success) {
-                    refreshWeightHistoryTable(result.data);
-                    showMessage(result.msg || t('WeightHistoryDeleted'));
-                } else {
-                    showMessage(result.message, false);
-                }
-            },
-            error: function () {
-                showMessage(t('ErrorOccurred'), false);
-            }
-        });
     }
 
     function refreshWeightHistoryTable(data) {
@@ -196,11 +168,6 @@ const ClientModule = (function () {
                     <td>${formatDate(item.createdOn)}</td>
                     <td>${item.weight || ''}</td>
                     <td>${item.height || ''}</td>
-                    <td>
-                        <button type="button" class="btn btn-sm btn-danger" onclick="ClientModule.deleteWeightHistory(${item.id})">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </td>
                 </tr>
             `;
             tbody.append(row);
@@ -231,9 +198,15 @@ const ClientModule = (function () {
             contentType: 'application/json',
             success: function (result) {
                 if (result.success) {
-                    refreshBiochemicalTestTable(result.data);
+                    fullBiochemicalTests = []; // Clear cache
+                    refreshBiochemicalTestTable(result.data.slice(0, 5));
                     $('#newBiochemicalTest').val('');
                     showMessage(result.msg || t('BiochemicalTestAdded'));
+
+                    // Show pagination if more than 5 records
+                    if (result.data.length > 5) {
+                        $('#biochemicalTestPagination').show();
+                    }
                 } else {
                     if (result.brokenRules && result.brokenRules.length > 0) {
                         const errors = result.brokenRules.map(r => r.message).join('<br>');
@@ -258,8 +231,16 @@ const ClientModule = (function () {
             data: { id: id, clientId: clientId },
             success: function (result) {
                 if (result.success) {
-                    refreshBiochemicalTestTable(result.data);
+                    fullBiochemicalTests = []; // Clear cache
+                    refreshBiochemicalTestTable(result.data.slice(0, 5));
                     showMessage(result.msg || t('BiochemicalTestDeleted'));
+
+                    // Update pagination visibility
+                    if (result.data.length > 5) {
+                        $('#biochemicalTestPagination').show();
+                    } else {
+                        $('#biochemicalTestPagination').hide();
+                    }
                 } else {
                     showMessage(result.message, false);
                 }
@@ -268,6 +249,27 @@ const ClientModule = (function () {
                 showMessage(t('ErrorOccurred'), false);
             }
         });
+    }
+
+    function loadMoreBiochemicalTests() {
+        if (fullBiochemicalTests.length > 0) {
+            refreshBiochemicalTestTable(fullBiochemicalTests);
+            $('#biochemicalTestPagination').hide();
+        } else {
+            $.ajax({
+                type: 'GET',
+                url: '/Client/GetBiochemicalTests',
+                data: { clientId: clientId },
+                success: function (data) {
+                    fullBiochemicalTests = data;
+                    refreshBiochemicalTestTable(data);
+                    $('#biochemicalTestPagination').hide();
+                },
+                error: function () {
+                    showMessage(t('ErrorOccurred'), false);
+                }
+            });
+        }
     }
 
     function refreshBiochemicalTestTable(data) {
@@ -314,9 +316,14 @@ const ClientModule = (function () {
             contentType: 'application/json',
             success: function (result) {
                 if (result.success) {
-                    refreshDrugsSupplementTable(result.data);
+                    fullDrugsSupplements = []; // Clear cache
+                    refreshDrugsSupplementTable(result.data.slice(0, 5));
                     $('#newDrugSupplement').val('');
                     showMessage(result.msg || t('DrugsSupplementAdded'));
+
+                    if (result.data.length > 5) {
+                        $('#drugsSupplementPagination').show();
+                    }
                 } else {
                     if (result.brokenRules && result.brokenRules.length > 0) {
                         const errors = result.brokenRules.map(r => r.message).join('<br>');
@@ -341,8 +348,15 @@ const ClientModule = (function () {
             data: { id: id, clientId: clientId },
             success: function (result) {
                 if (result.success) {
-                    refreshDrugsSupplementTable(result.data);
+                    fullDrugsSupplements = []; // Clear cache
+                    refreshDrugsSupplementTable(result.data.slice(0, 5));
                     showMessage(result.msg || t('DrugsSupplementDeleted'));
+
+                    if (result.data.length > 5) {
+                        $('#drugsSupplementPagination').show();
+                    } else {
+                        $('#drugsSupplementPagination').hide();
+                    }
                 } else {
                     showMessage(result.message, false);
                 }
@@ -351,6 +365,27 @@ const ClientModule = (function () {
                 showMessage(t('ErrorOccurred'), false);
             }
         });
+    }
+
+    function loadMoreDrugsSupplements() {
+        if (fullDrugsSupplements.length > 0) {
+            refreshDrugsSupplementTable(fullDrugsSupplements);
+            $('#drugsSupplementPagination').hide();
+        } else {
+            $.ajax({
+                type: 'GET',
+                url: '/Client/GetDrugsSupplements',
+                data: { clientId: clientId },
+                success: function (data) {
+                    fullDrugsSupplements = data;
+                    refreshDrugsSupplementTable(data);
+                    $('#drugsSupplementPagination').hide();
+                },
+                error: function () {
+                    showMessage(t('ErrorOccurred'), false);
+                }
+            });
+        }
     }
 
     function refreshDrugsSupplementTable(data) {
@@ -397,9 +432,14 @@ const ClientModule = (function () {
             contentType: 'application/json',
             success: function (result) {
                 if (result.success) {
-                    refreshMedicalHistoryTable(result.data);
+                    fullMedicalHistory = []; // Clear cache
+                    refreshMedicalHistoryTable(result.data.slice(0, 5));
                     $('#newMedicalHistory').val('');
                     showMessage(result.msg || t('MedicalHistoryAdded'));
+
+                    if (result.data.length > 5) {
+                        $('#medicalHistoryPagination').show();
+                    }
                 } else {
                     if (result.brokenRules && result.brokenRules.length > 0) {
                         const errors = result.brokenRules.map(r => r.message).join('<br>');
@@ -424,8 +464,15 @@ const ClientModule = (function () {
             data: { id: id, clientId: clientId },
             success: function (result) {
                 if (result.success) {
-                    refreshMedicalHistoryTable(result.data);
+                    fullMedicalHistory = []; // Clear cache
+                    refreshMedicalHistoryTable(result.data.slice(0, 5));
                     showMessage(result.msg || t('MedicalHistoryDeleted'));
+
+                    if (result.data.length > 5) {
+                        $('#medicalHistoryPagination').show();
+                    } else {
+                        $('#medicalHistoryPagination').hide();
+                    }
                 } else {
                     showMessage(result.message, false);
                 }
@@ -434,6 +481,27 @@ const ClientModule = (function () {
                 showMessage(t('ErrorOccurred'), false);
             }
         });
+    }
+
+    function loadMoreMedicalHistory() {
+        if (fullMedicalHistory.length > 0) {
+            refreshMedicalHistoryTable(fullMedicalHistory);
+            $('#medicalHistoryPagination').hide();
+        } else {
+            $.ajax({
+                type: 'GET',
+                url: '/Client/GetMedicalHistories',
+                data: { clientId: clientId },
+                success: function (data) {
+                    fullMedicalHistory = data;
+                    refreshMedicalHistoryTable(data);
+                    $('#medicalHistoryPagination').hide();
+                },
+                error: function () {
+                    showMessage(t('ErrorOccurred'), false);
+                }
+            });
+        }
     }
 
     function refreshMedicalHistoryTable(data) {
@@ -460,14 +528,16 @@ const ClientModule = (function () {
     return {
         init: init,
         createOrUpdate: createOrUpdate,
-        addWeightHistory: addWeightHistory,
-        deleteWeightHistory: deleteWeightHistory,
+        loadMoreWeightHistory: loadMoreWeightHistory,
         addBiochemicalTest: addBiochemicalTest,
         deleteBiochemicalTest: deleteBiochemicalTest,
+        loadMoreBiochemicalTests: loadMoreBiochemicalTests,
         addDrugsSupplement: addDrugsSupplement,
         deleteDrugsSupplement: deleteDrugsSupplement,
+        loadMoreDrugsSupplements: loadMoreDrugsSupplements,
         addMedicalHistory: addMedicalHistory,
-        deleteMedicalHistory: deleteMedicalHistory
+        deleteMedicalHistory: deleteMedicalHistory,
+        loadMoreMedicalHistory: loadMoreMedicalHistory
     };
 })();
 

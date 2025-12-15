@@ -66,7 +66,6 @@
                                 <span asp-validation-for="Weight" data-valmsg-for="Weight" class="text-danger field-validation-valid"></span>
                             </div>
 
-
                             <div class="col-md-12 mb-3">
                                 <label asp-for="Address" class="form-label">@Localizer["Address"]</label>
                                 <textarea asp-for="Address" class="form-control" rows="3"></textarea>
@@ -90,166 +89,211 @@
 
                         <!-- Weight History Section -->
                         <div class="mb-4">
-                            <h4 class="mb-3">@Localizer["WeightHistory"]</h4>
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <input type="number" id="newWeight" class="form-control" placeholder="@Localizer["EnterWeight"]" step="0.01" />
-                                </div>
-                                <div class="col-md-4">
-                                    <input type="number" id="newHeight" class="form-control" placeholder="@Localizer["EnterHeight"]" step="0.01" />
-                                </div>
-                                <div class="col-md-4">
-                                    <button type="button" class="btn btn-success" onclick="ClientModule.addWeightHistory()">
-                                        <i class="bi bi-plus-circle"></i> @Localizer["AddWeightRecord"]
-                                    </button>
-                                </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#weightHistoryCollapse">
+                                <h4 class="mb-0">@Localizer["WeightHistory"] <span class="badge bg-secondary">@Model.WeightHistories.Count</span></h4>
+                                <i class="bi bi-chevron-down"></i>
                             </div>
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>@Localizer["Date"]</th>
-                                            <th>@Localizer["Weight"]</th>
-                                            <th>@Localizer["Height"]</th>
-                                            <th>@Localizer["Actions"]</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="weightHistoryBody">
-                                        @foreach (var item in Model.WeightHistories)
-                                        {
+                            <div class="collapse" id="weightHistoryCollapse">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
                                             <tr>
-                                                <td>@item.CreatedOn.ToString("dd/MM/yyyy HH:mm")</td>
-                                                <td>@item.Weight</td>
-                                                <td>@item.Height</td>
-                                                <td>
-                                                    <button type="button" class="btn btn-sm btn-danger" onclick="ClientModule.deleteWeightHistory(@item.Id)">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </td>
+                                                <th>@Localizer["Date"]</th>
+                                                <th>@Localizer["Weight"]</th>
+                                                <th>@Localizer["Height"]</th>
                                             </tr>
-                                        }
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody id="weightHistoryBody">
+                                            @{
+                                                var weightHistories = Model.WeightHistories.Take(5).ToList();
+                                            }
+                                            @foreach (var item in weightHistories)
+                                            {
+                                                <tr>
+                                                    <td>@item.CreatedOn.ToString("dd/MM/yyyy HH:mm")</td>
+                                                    <td>@item.Weight</td>
+                                                    <td>@item.Height</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                @if (Model.WeightHistories.Count > 5)
+                                {
+                                    <div class="text-center" id="weightHistoryPagination">
+                                        <button type="button" class="btn btn-link" onclick="ClientModule.loadMoreWeightHistory()">
+                                            @Localizer["ShowMore"]...
+                                        </button>
+                                    </div>
+                                }
                             </div>
                         </div>
 
                         <!-- Biochemical Medical Tests Section -->
                         <div class="mb-4">
-                            <h4 class="mb-3">@Localizer["BiochemicalMedicalTests"]</h4>
-                            <div class="row mb-3">
-                                <div class="col-md-10">
-                                    <textarea id="newBiochemicalTest" class="form-control" placeholder="@Localizer["EnterMedicalTestData"]" rows="2"></textarea>
-                                </div>
-                                <div class="col-md-2">
-                                    <button type="button" class="btn btn-success" onclick="ClientModule.addBiochemicalTest()">
-                                        <i class="bi bi-plus-circle"></i> @Localizer["AddTest"]
-                                    </button>
-                                </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#biochemicalTestCollapse">
+                                <h4 class="mb-0">@Localizer["BiochemicalMedicalTests"] <span class="badge bg-secondary">@Model.BiochemicalTests.Count</span></h4>
+                                <i class="bi bi-chevron-down"></i>
                             </div>
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>@Localizer["Date"]</th>
-                                            <th>@Localizer["MedicalData"]</th>
-                                            <th>@Localizer["Actions"]</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="biochemicalTestBody">
-                                        @foreach (var item in Model.BiochemicalTests)
-                                        {
+                            <div class="collapse" id="biochemicalTestCollapse">
+                                <div class="row mb-3">
+                                    <div class="col-md-10">
+                                        <textarea id="newBiochemicalTest" class="form-control" placeholder="@Localizer["EnterMedicalTestData"]" rows="2"></textarea>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-success" onclick="ClientModule.addBiochemicalTest()">
+                                            <i class="bi bi-plus-circle"></i> @Localizer["AddTest"]
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
                                             <tr>
-                                                <td>@item.CreatedOn.ToString("dd/MM/yyyy HH:mm")</td>
-                                                <td>@item.MedicalData</td>
-                                                <td>
-                                                    <button type="button" class="btn btn-sm btn-danger" onclick="ClientModule.deleteBiochemicalTest(@item.Id)">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </td>
+                                                <th>@Localizer["Date"]</th>
+                                                <th>@Localizer["MedicalData"]</th>
+                                                <th>@Localizer["Actions"]</th>
                                             </tr>
-                                        }
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody id="biochemicalTestBody">
+                                            @{
+                                                var biochemicalTests = Model.BiochemicalTests.Take(5).ToList();
+                                            }
+                                            @foreach (var item in biochemicalTests)
+                                            {
+                                                <tr>
+                                                    <td>@item.CreatedOn.ToString("dd/MM/yyyy HH:mm")</td>
+                                                    <td>@item.MedicalData</td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-sm btn-danger" onclick="ClientModule.deleteBiochemicalTest(@item.Id)">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                @if (Model.BiochemicalTests.Count > 5)
+                                {
+                                    <div class="text-center" id="biochemicalTestPagination">
+                                        <button type="button" class="btn btn-link" onclick="ClientModule.loadMoreBiochemicalTests()">
+                                            @Localizer["ShowMore"]...
+                                        </button>
+                                    </div>
+                                }
                             </div>
                         </div>
 
                         <!-- Drugs/Supplements Section -->
                         <div class="mb-4">
-                            <h4 class="mb-3">@Localizer["DrugsSupplements"]</h4>
-                            <div class="row mb-3">
-                                <div class="col-md-10">
-                                    <input type="text" id="newDrugSupplement" class="form-control" placeholder="@Localizer["EnterDrugSupplementName"]" />
-                                </div>
-                                <div class="col-md-2">
-                                    <button type="button" class="btn btn-success" onclick="ClientModule.addDrugsSupplement()">
-                                        <i class="bi bi-plus-circle"></i> @Localizer["Add"]
-                                    </button>
-                                </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#drugsSupplementCollapse">
+                                <h4 class="mb-0">@Localizer["DrugsSupplements"] <span class="badge bg-secondary">@Model.DrugsSupplements.Count</span></h4>
+                                <i class="bi bi-chevron-down"></i>
                             </div>
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>@Localizer["Date"]</th>
-                                            <th>@Localizer["DrugSupplement"]</th>
-                                            <th>@Localizer["Actions"]</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="drugsSupplementBody">
-                                        @foreach (var item in Model.DrugsSupplements)
-                                        {
+                            <div class="collapse" id="drugsSupplementCollapse">
+                                <div class="row mb-3">
+                                    <div class="col-md-10">
+                                        <input type="text" id="newDrugSupplement" class="form-control" placeholder="@Localizer["EnterDrugSupplementName"]" />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-success" onclick="ClientModule.addDrugsSupplement()">
+                                            <i class="bi bi-plus-circle"></i> @Localizer["Add"]
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
                                             <tr>
-                                                <td>@item.CreatedOn.ToString("dd/MM/yyyy HH:mm")</td>
-                                                <td>@item.Drug</td>
-                                                <td>
-                                                    <button type="button" class="btn btn-sm btn-danger" onclick="ClientModule.deleteDrugsSupplement(@item.Id)">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </td>
+                                                <th>@Localizer["Date"]</th>
+                                                <th>@Localizer["DrugSupplement"]</th>
+                                                <th>@Localizer["Actions"]</th>
                                             </tr>
-                                        }
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody id="drugsSupplementBody">
+                                            @{
+                                                var drugsSupplements = Model.DrugsSupplements.Take(5).ToList();
+                                            }
+                                            @foreach (var item in drugsSupplements)
+                                            {
+                                                <tr>
+                                                    <td>@item.CreatedOn.ToString("dd/MM/yyyy HH:mm")</td>
+                                                    <td>@item.Drug</td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-sm btn-danger" onclick="ClientModule.deleteDrugsSupplement(@item.Id)">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                @if (Model.DrugsSupplements.Count > 5)
+                                {
+                                    <div class="text-center" id="drugsSupplementPagination">
+                                        <button type="button" class="btn btn-link" onclick="ClientModule.loadMoreDrugsSupplements()">
+                                            @Localizer["ShowMore"]...
+                                        </button>
+                                    </div>
+                                }
                             </div>
                         </div>
 
                         <!-- Medical History Section -->
                         <div class="mb-4">
-                            <h4 class="mb-3">@Localizer["MedicalHistory"]</h4>
-                            <div class="row mb-3">
-                                <div class="col-md-10">
-                                    <textarea id="newMedicalHistory" class="form-control" placeholder="@Localizer["EnterMedicalNote"]" rows="2"></textarea>
-                                </div>
-                                <div class="col-md-2">
-                                    <button type="button" class="btn btn-success" onclick="ClientModule.addMedicalHistory()">
-                                        <i class="bi bi-plus-circle"></i> @Localizer["AddNote"]
-                                    </button>
-                                </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#medicalHistoryCollapse">
+                                <h4 class="mb-0">@Localizer["MedicalHistory"] <span class="badge bg-secondary">@Model.MedicalHistories.Count</span></h4>
+                                <i class="bi bi-chevron-down"></i>
                             </div>
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>@Localizer["Date"]</th>
-                                            <th>@Localizer["MedicalNote"]</th>
-                                            <th>@Localizer["Actions"]</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="medicalHistoryBody">
-                                        @foreach (var item in Model.MedicalHistories)
-                                        {
+                            <div class="collapse" id="medicalHistoryCollapse">
+                                <div class="row mb-3">
+                                    <div class="col-md-10">
+                                        <textarea id="newMedicalHistory" class="form-control" placeholder="@Localizer["EnterMedicalNote"]" rows="2"></textarea>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-success" onclick="ClientModule.addMedicalHistory()">
+                                            <i class="bi bi-plus-circle"></i> @Localizer["AddNote"]
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
                                             <tr>
-                                                <td>@item.CreatedOn.ToString("dd/MM/yyyy HH:mm")</td>
-                                                <td>@item.MedicalNote</td>
-                                                <td>
-                                                    <button type="button" class="btn btn-sm btn-danger" onclick="ClientModule.deleteMedicalHistory(@item.Id)">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </td>
+                                                <th>@Localizer["Date"]</th>
+                                                <th>@Localizer["MedicalNote"]</th>
+                                                <th>@Localizer["Actions"]</th>
                                             </tr>
-                                        }
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody id="medicalHistoryBody">
+                                            @{
+                                                var medicalHistories = Model.MedicalHistories.Take(5).ToList();
+                                            }
+                                            @foreach (var item in medicalHistories)
+                                            {
+                                                <tr>
+                                                    <td>@item.CreatedOn.ToString("dd/MM/yyyy HH:mm")</td>
+                                                    <td>@item.MedicalNote</td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-sm btn-danger" onclick="ClientModule.deleteMedicalHistory(@item.Id)">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                @if (Model.MedicalHistories.Count > 5)
+                                {
+                                    <div class="text-center" id="medicalHistoryPagination">
+                                        <button type="button" class="btn btn-link" onclick="ClientModule.loadMoreMedicalHistory()">
+                                            @Localizer["ShowMore"]...
+                                        </button>
+                                    </div>
+                                }
                             </div>
                         </div>
                     }

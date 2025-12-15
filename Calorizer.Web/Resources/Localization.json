@@ -47,6 +47,14 @@
     "ValueEn": "Search",
     "ValueAr": "بحث"
   },
+  "ShowMore": {
+    "ValueEn": "Show More",
+    "ValueAr": "عرض المزيد"
+  },
+  "ShowLess": {
+    "ValueEn": "Show Less",
+    "ValueAr": "عرض أقل"
+  },
   "FoodName": {
     "ValueEn": "Food Name",
     "ValueAr": "اسم الطعام"
@@ -263,9 +271,6 @@
     "ValueEn": "Enter medical note",
     "ValueAr": "أدخل ملاحظة طبية"
   },
-
-
-  // Validations Messages
   "FullNameEnRequired": {
     "ValueEn": "English name is required",
     "ValueAr": "الاسم بالإنجليزية مطلوب"

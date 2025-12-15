@@ -103,64 +103,19 @@ namespace Calorizer.Web.Controllers
             }
         }
 
-        #region Weight History AJAX Actions
+        #region Weight History GET Endpoint
 
-        [HttpPost]
-        public async Task<IActionResult> AddWeightHistory([FromBody] WeightHistoryDto model)
+        [HttpGet]
+        public async Task<IActionResult> GetWeightHistories(int clientId)
         {
             try
             {
-                int userId = 1;
-                var result = await _clientService.AddWeightHistoryAsync(model.ClientId, model, userId);
-
-                if (result.Succeeded)
-                {
-                    return Json(new
-                    {
-                        success = true,
-                        data = result.Data,
-                        msg = _localizer["WeightHistoryAdded"]
-                    });
-                }
-
-                return Json(new
-                {
-                    success = false,
-                    brokenRules = result.BrokenRules,
-                    message = _localizer[result.Message]
-                });
-            }
-            catch (Exception ex)
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = _localizer["ErrorOccurred"]
-                });
-            }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> DeleteWeightHistory(int id, int clientId)
-        {
-            try
-            {
-                await _clientService.DeleteWeightHistoryAsync(id);
                 var histories = await _clientService.GetWeightHistoriesAsync(clientId);
-                return Json(new
-                {
-                    success = true,
-                    data = histories,
-                    msg = _localizer["WeightHistoryDeleted"]
-                });
+                return Json(histories);
             }
             catch (Exception ex)
             {
-                return Json(new
-                {
-                    success = false,
-                    message = _localizer["ErrorOccurred"]
-                });
+                return Json(new { success = false, message = _localizer["ErrorOccurred"] });
             }
         }
 
@@ -227,6 +182,20 @@ namespace Calorizer.Web.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetBiochemicalTests(int clientId)
+        {
+            try
+            {
+                var tests = await _clientService.GetBiochemicalTestsAsync(clientId);
+                return Json(tests);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = _localizer["ErrorOccurred"] });
+            }
+        }
+
         #endregion
 
         #region Drugs/Supplements AJAX Actions
@@ -290,6 +259,20 @@ namespace Calorizer.Web.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetDrugsSupplements(int clientId)
+        {
+            try
+            {
+                var drugs = await _clientService.GetDrugsSupplementsAsync(clientId);
+                return Json(drugs);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = _localizer["ErrorOccurred"] });
+            }
+        }
+
         #endregion
 
         #region Medical History AJAX Actions
@@ -350,6 +333,20 @@ namespace Calorizer.Web.Controllers
                     success = false,
                     message = _localizer["ErrorOccurred"]
                 });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMedicalHistories(int clientId)
+        {
+            try
+            {
+                var histories = await _clientService.GetMedicalHistoriesAsync(clientId);
+                return Json(histories);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = _localizer["ErrorOccurred"] });
             }
         }
 
