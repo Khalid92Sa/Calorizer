@@ -7,6 +7,162 @@
     "ValueEn": "Home",
     "ValueAr": "الرئيسية"
   },
+  "Calculate": {
+    "ValueEn": "Calculate",
+    "ValueAr": "حساب"
+  },
+  "Calculation": {
+    "ValueEn": "Calculation",
+    "ValueAr": "الحساب"
+  },
+  "EnergyCalculation": {
+    "ValueEn": "Energy & Nutrition Calculation",
+    "ValueAr": "حساب الطاقة والتغذية"
+  },
+  "ClientInformation": {
+    "ValueEn": "Client Information",
+    "ValueAr": "معلومات العميل"
+  },
+  "ClientID": {
+    "ValueEn": "Client ID",
+    "ValueAr": "رقم العميل"
+  },
+  "ClientName": {
+    "ValueEn": "Client Name",
+    "ValueAr": "اسم العميل"
+  },
+  "TotalEnergyExpenditure": {
+    "ValueEn": "Total Energy Expenditure",
+    "ValueAr": "إجمالي إنفاق الطاقة"
+  },
+  "PhysicalActivityFactor": {
+    "ValueEn": "Physical Activity Factor",
+    "ValueAr": "معامل النشاط البدني"
+  },
+  "SelectPhysicalActivity": {
+    "ValueEn": "-- Select Physical Activity --",
+    "ValueAr": "-- اختر مستوى النشاط --"
+  },
+  "MacronutrientDistribution": {
+    "ValueEn": "Macronutrient Distribution Range",
+    "ValueAr": "نطاق توزيع المغذيات الكبيرة"
+  },
+  "TotalCalories": {
+    "ValueEn": "Total Calories",
+    "ValueAr": "إجمالي السعرات"
+  },
+  "Carbohydrates": {
+    "ValueEn": "Carbohydrates (%)",
+    "ValueAr": "الكربوهيدرات (%)"
+  },
+  "Protein": {
+    "ValueEn": "Protein (%)",
+    "ValueAr": "البروتين (%)"
+  },
+  "FatPercentage": {
+    "ValueEn": "Fat (%)",
+    "ValueAr": "الدهون (%)"
+  },
+  "MinGrams": {
+    "ValueEn": "Min (g)",
+    "ValueAr": "الحد الأدنى (جم)"
+  },
+  "MaxGrams": {
+    "ValueEn": "Max (g)",
+    "ValueAr": "الحد الأعلى (جم)"
+  },
+  "FoodExchangeList": {
+    "ValueEn": "Food Exchange List",
+    "ValueAr": "قائمة البدائل الغذائية"
+  },
+  "FoodGroup": {
+    "ValueEn": "Food Group",
+    "ValueAr": "المجموعة الغذائية"
+  },
+  "Serving": {
+    "ValueEn": "Serving",
+    "ValueAr": "الحصة"
+  },
+  "CHO": {
+    "ValueEn": "CHO",
+    "ValueAr": "كربوهيدرات"
+  },
+  "P": {
+    "ValueEn": "P",
+    "ValueAr": "بروتين"
+  },
+  "SkimmedMilk": {
+    "ValueEn": "Skimmed Milk",
+    "ValueAr": "حليب خالي الدسم"
+  },
+  "LowFatMilk": {
+    "ValueEn": "Low Fat Milk",
+    "ValueAr": "حليب قليل الدسم"
+  },
+  "FullFatMilk": {
+    "ValueEn": "Full Fat Milk",
+    "ValueAr": "حليب كامل الدسم"
+  },
+  "Fruit": {
+    "ValueEn": "Fruit",
+    "ValueAr": "فواكه"
+  },
+  "Vegetable": {
+    "ValueEn": "Vegetable",
+    "ValueAr": "خضروات"
+  },
+  "Sugar": {
+    "ValueEn": "Sugar",
+    "ValueAr": "سكر"
+  },
+  "Starch": {
+    "ValueEn": "Starch",
+    "ValueAr": "نشويات"
+  },
+  "LeanMeat": {
+    "ValueEn": "Lean Meat",
+    "ValueAr": "لحم قليل الدهن"
+  },
+  "MediumFatMeat": {
+    "ValueEn": "Medium Fat Meat",
+    "ValueAr": "لحم متوسط الدهن"
+  },
+  "HighFatMeat": {
+    "ValueEn": "High Fat Meat",
+    "ValueAr": "لحم عالي الدهن"
+  },
+  "TotalGrams": {
+    "ValueEn": "Total Grams (g)",
+    "ValueAr": "إجمالي الجرامات (جم)"
+  },
+  "TotalCaloriesKcal": {
+    "ValueEn": "Total Calories (kcal)",
+    "ValueAr": "إجمالي السعرات (كيلو كالوري)"
+  },
+  "Notes": {
+    "ValueEn": "Notes",
+    "ValueAr": "ملاحظات"
+  },
+  "CalculateNow": {
+    "ValueEn": "Calculate Now",
+    "ValueAr": "احسب الآن"
+  },
+  "SaveCalculation": {
+    "ValueEn": "Save Calculation",
+    "ValueAr": "حفظ الحساب"
+  },
+  "BackToClient": {
+    "ValueEn": "Back to Client",
+    "ValueAr": "العودة للعميل"
+  },
+  "Kcal": {
+    "ValueEn": "kcal",
+    "ValueAr": "كيلو كالوري"
+  },
+  "Grams": {
+    "ValueEn": "grams",
+    "ValueAr": "جرام"
+  },
   "About": {
     "ValueEn": "About",
     "ValueAr": "حول"
@@ -162,6 +318,10 @@
   "Address": {
     "ValueEn": "Address",
     "ValueAr": "العنوان"
+  },
+  "Age": {
+    "ValueEn": "Age (years)",
+    "ValueAr": "العمر (سنوات)"
   },
   "Required": {
     "ValueEn": "Required",

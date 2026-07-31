@@ -9,9 +9,9 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title mb-0">Clients</h3>
+                    <h3 class="card-title mb-0">@Localizer["Clients"]</h3>
                     <a asp-action="Create" class="btn btn-primary">
-                        <i class="bi bi-plus-circle"></i> Add New Client
+                        <i class="bi bi-plus-circle"></i> @Localizer["AddNewClient"]
                     </a>
                 </div>
                 <div class="card-body">
@@ -20,13 +20,13 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Full Name (EN)</th>
-                                    <th>Full Name (AR)</th>
-                                    <th>Mobile</th>
-                                    <th>Date of Birth</th>
-                                    <th>Weight (kg)</th>
-                                    <th>Height (cm)</th>
-                                    <th>Actions</th>
+                                    <th>@Localizer["FullNameEn"]</th>
+                                    <th>@Localizer["FullNameAr"]</th>
+                                    <th>@Localizer["MobileNumber"]</th>
+                                    <th>@Localizer["DateOfBirth"]</th>
+                                    <th>@Localizer["Weight"]</th>
+                                    <th>@Localizer["Height"]</th>
+                                    <th>@Localizer["Actions"]</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -43,8 +43,11 @@
                                             <td>@client.Weight</td>
                                             <td>@client.Height</td>
                                             <td>
-                                                <a asp-action="Edit" asp-route-id="@client.Id" class="btn btn-sm btn-dark">
-                                                    <i class="bi bi-pencil"></i> Edit
+                                                <a asp-action="Edit" asp-route-id="@client.Id" class="btn btn-sm btn-dark" title="@Localizer["Edit"]">
+                                                    <i class="bi bi-pencil"></i> @Localizer["Edit"]
+                                                </a>
+                                                <a asp-controller="Calculation" asp-action="Index" asp-route-id="@client.Id" class="btn btn-sm btn-success" title="@Localizer["Calculate"]">
+                                                    <i class="bi bi-calculator"></i> @Localizer["Calculate"]
                                                 </a>
                                             </td>
                                         </tr>
@@ -53,7 +56,7 @@
                                 else
                                 {
                                     <tr>
-                                        <td colspan="8" class="text-center">No clients found</td>
+                                        <td colspan="8" class="text-center">@Localizer["NoClientsFound"]</td>
                                     </tr>
                                 }
                             </tbody>

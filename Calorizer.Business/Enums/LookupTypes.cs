@@ -9,5 +9,6 @@ namespace Calorizer.Business.Enums
     public enum LookupTypes
     {
         Gender = 1,
+        PhysicalActivityFactor = 2,
     }
 }

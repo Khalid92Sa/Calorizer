@@ -48,6 +48,7 @@ builder.Services.AddScoped<Localizer>(sp =>
 
 builder.Services.AddScoped<ILookupService, LookupService>();
 builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<ICalculationService, CalculationService>();
 
 // ✅ DYNAMIC FLUENT VALIDATION REGISTRATION
 // This will automatically register all validators in the Business assembly
