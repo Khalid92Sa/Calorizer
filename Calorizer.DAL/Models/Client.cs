@@ -23,7 +23,17 @@ public partial class Client
 
     public decimal? Height { get; set; }
 
+    public int? CreatedBy { get; set; }
+
+    public DateTime? CreatedOn { get; set; }
+
+    public int? ModifiedBy { get; set; }
+
+    public DateTime? ModifiedOn { get; set; }
+
     public virtual ICollection<BiochemicalMedicalTest> BiochemicalMedicalTests { get; set; } = new List<BiochemicalMedicalTest>();
+
+    public virtual ICollection<CalculationNote> CalculationNotes { get; set; } = new List<CalculationNote>();
 
     public virtual ICollection<DrugsSupplement> DrugsSupplements { get; set; } = new List<DrugsSupplement>();
 

@@ -69,6 +69,85 @@ namespace Calorizer.Web.Controllers
             }
         }
 
+        #region Calculation Notes
+
+        // POST: Calculation/AddNote
+        [HttpPost]
+        public async Task<IActionResult> AddNote([FromBody] CalculationNoteDto model)
+        {
+            try
+            {
+                int userId = 1; // TODO: Get actual user ID from authentication
+                var result = await _calculationService.AddNoteAsync(model, userId);
+
+                if (result.Succeeded)
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        data = result.Data,
+                        msg = _localizer["NoteAdded"]
+                    });
+                }
+
+                return Json(new
+                {
+                    success = false,
+                    message = _localizer[result.Message]
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = _localizer["ErrorOccurred"]
+                });
+            }
+        }
+
+        // POST: Calculation/DeleteNote
+        [HttpPost]
+        public async Task<IActionResult> DeleteNote(int id, int clientId)
+        {
+            try
+            {
+                await _calculationService.DeleteNoteAsync(id);
+                var notes = await _calculationService.GetNotesAsync(clientId);
+                return Json(new
+                {
+                    success = true,
+                    data = notes,
+                    msg = _localizer["NoteDeleted"]
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = _localizer["ErrorOccurred"]
+                });
+            }
+        }
+
+        // GET: Calculation/GetNotes
+        [HttpGet]
+        public async Task<IActionResult> GetNotes(int clientId)
+        {
+            try
+            {
+                var notes = await _calculationService.GetNotesAsync(clientId);
+                return Json(notes);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = _localizer["ErrorOccurred"] });
+            }
+        }
+
+        #endregion
+
         // POST: Calculation/CalculateFoodExchange
         [HttpPost]
         public IActionResult CalculateFoodExchange([FromBody] FoodExchangeListDto model)

@@ -40,7 +40,9 @@ namespace Calorizer.Business.Services
                     Address = clientDto.Address,
                     DateOfBirth = clientDto.DateOfBirth,
                     Weight = clientDto.Weight,
-                    Height = clientDto.Height
+                    Height = clientDto.Height,
+                    CreatedBy = userId,
+                    CreatedOn = DateTime.Now
                 };
 
                 await _unitOfWork.Repository<Client>().AddAsync(client);
@@ -113,6 +115,8 @@ namespace Calorizer.Business.Services
                 client.DateOfBirth = clientDto.DateOfBirth;
                 client.Weight = clientDto.Weight;
                 client.Height = clientDto.Height;
+                client.ModifiedBy = userId;
+                client.ModifiedOn = DateTime.Now;
 
                 await _unitOfWork.Repository<Client>().UpdateAsync(client);
 

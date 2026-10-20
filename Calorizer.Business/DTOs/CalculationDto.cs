@@ -39,6 +39,7 @@ namespace Calorizer.Business.DTOs
 
         // Notes
         public string Notes { get; set; } = string.Empty;
+        public List<CalculationNoteDto> NotesHistory { get; set; } = new();
 
         // Lookups
         public List<LookupDto> PhysicalActivityFactors { get; set; } = new();

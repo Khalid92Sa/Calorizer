@@ -2,6 +2,22 @@
 
 @{
     ViewData["Title"] = Localizer["Calculation"];
+
+    // Exchange values per 1 serving (CHO g, Protein g, Fat g, Kcal)
+    var foodGroups = new[]
+    {
+        new { Key = "SkimmedMilk",   Cho = 12, Protein = 8, Fat = 0, Calories = 80,  RowClass = "table-info",      RowStyle = "" },
+        new { Key = "LowFatMilk",    Cho = 12, Protein = 8, Fat = 5, Calories = 125, RowClass = "table-info",      RowStyle = "" },
+        new { Key = "FullFatMilk",   Cho = 12, Protein = 8, Fat = 8, Calories = 152, RowClass = "table-info",      RowStyle = "" },
+        new { Key = "Fruit",         Cho = 15, Protein = 0, Fat = 0, Calories = 60,  RowClass = "table-danger",    RowStyle = "" },
+        new { Key = "Vegetable",     Cho = 5,  Protein = 2, Fat = 0, Calories = 25,  RowClass = "table-success",   RowStyle = "" },
+        new { Key = "Sugar",         Cho = 5,  Protein = 0, Fat = 0, Calories = 20,  RowClass = "",                RowStyle = "" },
+        new { Key = "Starch",        Cho = 15, Protein = 3, Fat = 0, Calories = 80,  RowClass = "table-warning",   RowStyle = "" },
+        new { Key = "LeanMeat",      Cho = 0,  Protein = 7, Fat = 3, Calories = 55,  RowClass = "table-secondary", RowStyle = "" },
+        new { Key = "MediumFatMeat", Cho = 0,  Protein = 7, Fat = 5, Calories = 75,  RowClass = "table-secondary", RowStyle = "" },
+        new { Key = "HighFatMeat",   Cho = 0,  Protein = 7, Fat = 8, Calories = 100, RowClass = "table-secondary", RowStyle = "" },
+        new { Key = "Fat",           Cho = 0,  Protein = 0, Fat = 5, Calories = 45,  RowClass = "",                RowStyle = "background-color: #fffacd;" }
+    };
 }
 
 <div class="container-fluid py-4">
@@ -161,116 +177,25 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <!-- Milk Group -->
-                                        <tr class="table-info">
-                                            <td>@Localizer["SkimmedMilk"]</td>
-                                            <td><input type="number" class="form-control form-control-sm food-serving" data-group="SkimmedMilk" value="0" step="0.5" /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="12" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="8" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="0" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="80" readonly /></td>
-                                        </tr>
-                                        <tr class="table-info">
-                                            <td>@Localizer["LowFatMilk"]</td>
-                                            <td><input type="number" class="form-control form-control-sm food-serving" data-group="LowFatMilk" value="0" step="0.5" /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="12" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="8" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="5" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="125" readonly /></td>
-                                        </tr>
-                                        <tr class="table-info">
-                                            <td>@Localizer["FullFatMilk"]</td>
-                                            <td><input type="number" class="form-control form-control-sm food-serving" data-group="FullFatMilk" value="0" step="0.5" /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="12" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="8" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="8" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="152" readonly /></td>
-                                        </tr>
-
-                                        <!-- Fruit -->
-                                        <tr class="table-danger">
-                                            <td>@Localizer["Fruit"]</td>
-                                            <td><input type="number" class="form-control form-control-sm food-serving" data-group="Fruit" value="0" step="0.5" /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="15" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="0" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="0" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="60" readonly /></td>
-                                        </tr>
-
-                                        <!-- Vegetable -->
-                                        <tr class="table-success">
-                                            <td>@Localizer["Vegetable"]</td>
-                                            <td><input type="number" class="form-control form-control-sm food-serving" data-group="Vegetable" value="0" step="0.5" /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="5" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="2" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="0" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="25" readonly /></td>
-                                        </tr>
-
-                                        <!-- Sugar -->
-                                        <tr>
-                                            <td>@Localizer["Sugar"]</td>
-                                            <td><input type="number" class="form-control form-control-sm food-serving" data-group="Sugar" value="0" step="0.5" /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="5" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="0" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="0" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="20" readonly /></td>
-                                        </tr>
-
-                                        <!-- Starch -->
-                                        <tr class="table-warning">
-                                            <td>@Localizer["Starch"]</td>
-                                            <td><input type="number" class="form-control form-control-sm food-serving" data-group="Starch" value="0" step="0.5" /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="15" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="3" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="0" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="80" readonly /></td>
-                                        </tr>
-
-                                        <!-- Meat Group -->
-                                        <tr class="table-secondary">
-                                            <td>@Localizer["LeanMeat"]</td>
-                                            <td><input type="number" class="form-control form-control-sm food-serving" data-group="LeanMeat" value="0" step="0.5" /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="0" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="7" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="3" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="55" readonly /></td>
-                                        </tr>
-                                        <tr class="table-secondary">
-                                            <td>@Localizer["MediumFatMeat"]</td>
-                                            <td><input type="number" class="form-control form-control-sm food-serving" data-group="MediumFatMeat" value="0" step="0.5" /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="0" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="7" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="5" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="75" readonly /></td>
-                                        </tr>
-                                        <tr class="table-secondary">
-                                            <td>@Localizer["HighFatMeat"]</td>
-                                            <td><input type="number" class="form-control form-control-sm food-serving" data-group="HighFatMeat" value="0" step="0.5" /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="0" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="7" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="8" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="100" readonly /></td>
-                                        </tr>
-
-                                        <!-- Fat -->
-                                        <tr style="background-color: #fffacd;">
-                                            <td>@Localizer["Fat"]</td>
-                                            <td><input type="number" class="form-control form-control-sm food-serving" data-group="Fat" value="0" step="0.5" /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="0" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="0" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="5" readonly /></td>
-                                            <td><input type="number" class="form-control form-control-sm bg-light" value="45" readonly /></td>
-                                        </tr>
+                                        @foreach (var food in foodGroups)
+                                        {
+                                            <tr class="@food.RowClass" style="@food.RowStyle">
+                                                <td>@Localizer[food.Key]</td>
+                                                <td>
+                                                    <input type="number" class="form-control form-control-sm food-serving" data-group="@food.Key"
+                                                           data-cho="@food.Cho" data-protein="@food.Protein" data-fat="@food.Fat" data-calories="@food.Calories"
+                                                           value="0" min="0" step="0.5" />
+                                                </td>
+                                                <td><input type="number" class="form-control form-control-sm bg-light row-cho" value="0" title="@food.Cho / serving" readonly tabindex="-1" /></td>
+                                                <td><input type="number" class="form-control form-control-sm bg-light row-protein" value="0" title="@food.Protein / serving" readonly tabindex="-1" /></td>
+                                                <td><input type="number" class="form-control form-control-sm bg-light row-fat" value="0" title="@food.Fat / serving" readonly tabindex="-1" /></td>
+                                                <td><input type="number" class="form-control form-control-sm bg-light row-calories" value="0" title="@food.Calories / serving" readonly tabindex="-1" /></td>
+                                            </tr>
+                                        }
 
                                         <!-- Totals Row -->
                                         <tr class="table-dark fw-bold">
-                                            <td>@Localizer["TotalGrams"]</td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-primary w-100" onclick="CalculationModule.calculateFoodExchange()">
-                                                    <i class="bi bi-calculator"></i>
-                                                </button>
-                                            </td>
+                                            <td colspan="2">@Localizer["TotalGrams"]</td>
                                             <td><input type="number" id="totalCHO" class="form-control form-control-sm bg-dark text-white fw-bold" value="0" readonly /></td>
                                             <td><input type="number" id="totalProtein" class="form-control form-control-sm bg-dark text-white fw-bold" value="0" readonly /></td>
                                             <td><input type="number" id="totalFat" class="form-control form-control-sm bg-dark text-white fw-bold" value="0" readonly /></td>
@@ -282,27 +207,63 @@
                         </div>
                     </div>
 
-                    <!-- Notes Section -->
+                    <!-- Notes Section (saved as history) -->
                     <div class="row mb-4">
                         <div class="col-12">
-                            <h4 class="border-bottom pb-2 mb-3">
-                                <i class="bi bi-journal-text"></i> @Localizer["Notes"]
-                            </h4>
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                                <h4 class="mb-0">
+                                    <i class="bi bi-journal-text"></i> @Localizer["Notes"]
+                                    <span class="badge bg-secondary" id="notesCount">@Model.NotesHistory.Count</span>
+                                </h4>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="CalculationModule.printNotes()">
+                                    <i class="bi bi-printer"></i> @Localizer["PrintNotes"]
+                                </button>
+                            </div>
                         </div>
+
+                        <div class="col-md-10 mb-3">
+                            <textarea id="newNote" class="form-control" rows="4" dir="auto" placeholder="@Localizer["EnterNote"]"></textarea>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <button type="button" class="btn btn-success w-100" onclick="CalculationModule.addNote()">
+                                <i class="bi bi-plus-circle"></i> @Localizer["AddNote"]
+                            </button>
+                        </div>
+
                         <div class="col-12">
-                            <textarea id="notes" class="form-control" rows="5" placeholder="@Localizer["Notes"]">@Model.Notes</textarea>
+                            <div class="table-responsive">
+                                <table class="table table-striped align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 170px;">@Localizer["Date"]</th>
+                                            <th>@Localizer["Notes"]</th>
+                                            <th style="width: 110px;">@Localizer["Actions"]</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="notesBody">
+                                        @* Rendered by CalculationModule.renderNotes() *@
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="text-center" id="notesShowMore" style="display: none;">
+                                <button type="button" class="btn btn-link" onclick="CalculationModule.showAllNotes()">
+                                    <i class="bi bi-chevron-down"></i> @Localizer["ShowMore"]
+                                </button>
+                            </div>
+                            <div class="text-center" id="notesShowLess" style="display: none;">
+                                <button type="button" class="btn btn-link" onclick="CalculationModule.showLessNotes()">
+                                    <i class="bi bi-chevron-up"></i> @Localizer["ShowLess"]
+                                </button>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="row no-print">
+                    <div class="row">
                         <div class="col-12">
                             <a asp-controller="Client" asp-action="Edit" asp-route-id="@Model.ClientId" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left"></i> @Localizer["BackToClient"]
                             </a>
-                            <button type="button" class="btn btn-primary" onclick="window.print()">
-                                <i class="bi bi-printer"></i> Print
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -315,10 +276,30 @@
 <input type="hidden" id="clientId" value="@Model.ClientId" />
 <input type="hidden" id="genderId" value="@Model.GenderId" />
 
+<style>
+    /* Notes-only print: everything on the page is hidden except the generated #notesPrintArea */
+    #notesPrintArea { display: none; }
+
+    @@media print {
+        body.printing-notes > *:not(#notesPrintArea) { display: none !important; }
+        body.printing-notes #notesPrintArea { display: block; padding: 0 10mm; font-size: 14px; }
+        #notesPrintArea h3 { margin-bottom: 4px; }
+        #notesPrintArea .print-meta { color: #555; margin-bottom: 16px; }
+        #notesPrintArea .print-note { border-top: 1px solid #ccc; padding: 10px 0; page-break-inside: avoid; }
+        #notesPrintArea .print-note-date { font-weight: bold; margin-bottom: 4px; }
+        #notesPrintArea .print-note-text { white-space: pre-wrap; }
+    }
+</style>
+
 @section Scripts {
     <script src="~/js/application/calculation.js" asp-append-version="true"></script>
     <script>
         // Initialize the CalculationModule
-        CalculationModule.init(@Model.ClientId, @Model.GenderId, @Html.Raw(Json.Serialize(Localizer.GetAll())));
+        CalculationModule.init(
+            @Model.ClientId,
+            @Model.GenderId,
+            @Html.Raw(Json.Serialize(Localizer.GetAll())),
+            @Html.Raw(Json.Serialize(Model.NotesHistory)),
+            @Html.Raw(Json.Serialize(Model.ClientName)));
     </script>
 }

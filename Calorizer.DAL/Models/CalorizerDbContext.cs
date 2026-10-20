@@ -17,6 +17,8 @@ public partial class CalorizerDbContext : DbContext
 
     public virtual DbSet<BiochemicalMedicalTest> BiochemicalMedicalTests { get; set; }
 
+    public virtual DbSet<CalculationNote> CalculationNotes { get; set; }
+
     public virtual DbSet<Client> Clients { get; set; }
 
     public virtual DbSet<DrugsSupplement> DrugsSupplements { get; set; }
@@ -45,9 +47,22 @@ public partial class CalorizerDbContext : DbContext
                 .HasConstraintName("FK_BiochemicalMedicalTests_Clients");
         });
 
+        modelBuilder.Entity<CalculationNote>(entity =>
+        {
+            entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+            entity.Property(e => e.Note).HasMaxLength(4000);
+
+            entity.HasOne(d => d.Client).WithMany(p => p.CalculationNotes)
+                .HasForeignKey(d => d.ClientId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CalculationNotes_Clients");
+        });
+
         modelBuilder.Entity<Client>(entity =>
         {
             entity.Property(e => e.Address).HasMaxLength(2000);
+            entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+            entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
             entity.Property(e => e.DateOfBirth).HasColumnType("datetime");
             entity.Property(e => e.FullNameAr).HasMaxLength(500);
             entity.Property(e => e.FullNameEn).HasMaxLength(500);

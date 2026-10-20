@@ -1,3 +1,4 @@
+using Calorizer.Business.Interfaces;
 using Calorizer.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -7,15 +8,19 @@ namespace Calorizer.Web.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IDashboardService _dashboardService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IDashboardService dashboardService)
         {
             _logger = logger;
+            _dashboardService = dashboardService;
         }
 
-        public IActionResult Index()
+        // GET: Home/Index (Dashboard)
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var dashboard = await _dashboardService.GetDashboardAsync();
+            return View(dashboard);
         }
 
         public IActionResult Privacy()

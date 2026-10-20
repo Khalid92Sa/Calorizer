@@ -15,6 +15,34 @@ const ClientModule = (function () {
     function init(id, localization) {
         clientId = id;
         translations = localization || {};
+
+        // BMI: recalculate live while Height / Weight change, and once on load
+        $('#Height, #Weight').on('input', calculateBMI);
+        calculateBMI();
+    }
+
+    // BMI = Weight (kg) / (Height in m)^2  — Height is entered in cm
+    // Normal range 18.5 – 24.5 => GREEN, otherwise RED
+    function calculateBMI() {
+        const $bmi = $('#bmi');
+        if ($bmi.length === 0) return;
+
+        const heightCm = parseFloat($('#Height').val()) || 0;
+        const weight = parseFloat($('#Weight').val()) || 0;
+
+        $bmi.removeClass('text-success text-danger border-success border-danger');
+
+        if (heightCm <= 0 || weight <= 0) {
+            $bmi.val('');
+            return;
+        }
+
+        const heightM = heightCm / 100;
+        const bmi = weight / (heightM * heightM);
+        const isNormal = bmi >= 18.5 && bmi <= 24.5;
+
+        $bmi.val(bmi.toFixed(1));
+        $bmi.addClass(isNormal ? 'text-success border-success' : 'text-danger border-danger');
     }
 
     // Helper function to get localized text

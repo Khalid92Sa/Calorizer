@@ -510,5 +510,97 @@
   "MedicalNoteMaxLength": {
     "ValueEn": "Medical note must not exceed 4000 characters",
     "ValueAr": "الملاحظة الطبية يجب ألا تتجاوز 4000 حرف"
+  },
+  "BMI": {
+    "ValueEn": "BMI",
+    "ValueAr": "مؤشر كتلة الجسم"
+  },
+  "Print": {
+    "ValueEn": "Print",
+    "ValueAr": "طباعة"
+  },
+  "PrintNotes": {
+    "ValueEn": "Print Notes",
+    "ValueAr": "طباعة الملاحظات"
+  },
+  "EnterNote": {
+    "ValueEn": "Enter note",
+    "ValueAr": "أدخل الملاحظة"
+  },
+  "NoteAdded": {
+    "ValueEn": "Note added successfully",
+    "ValueAr": "تمت إضافة الملاحظة بنجاح"
+  },
+  "NoteDeleted": {
+    "ValueEn": "Note deleted successfully",
+    "ValueAr": "تم حذف الملاحظة بنجاح"
+  },
+  "NoteRequired": {
+    "ValueEn": "Note is required",
+    "ValueAr": "الملاحظة مطلوبة"
+  },
+  "NoteMaxLength": {
+    "ValueEn": "Note must not exceed 4000 characters",
+    "ValueAr": "الملاحظة يجب ألا تتجاوز 4000 حرف"
+  },
+  "NoNotes": {
+    "ValueEn": "No notes yet",
+    "ValueAr": "لا توجد ملاحظات"
+  },
+  "Dashboard": {
+    "ValueEn": "Dashboard",
+    "ValueAr": "لوحة المعلومات"
+  },
+  "TotalClients": {
+    "ValueEn": "Total Clients",
+    "ValueAr": "إجمالي العملاء"
+  },
+  "NewClientsThisMonth": {
+    "ValueEn": "New Clients (This Month)",
+    "ValueAr": "عملاء جدد (هذا الشهر)"
+  },
+  "UpdatedClientsThisMonth": {
+    "ValueEn": "Updated Clients (This Month)",
+    "ValueAr": "عملاء محدثون (هذا الشهر)"
+  },
+  "CalculationNotesCount": {
+    "ValueEn": "Saved Notes",
+    "ValueAr": "الملاحظات المحفوظة"
+  },
+  "ClientsByGender": {
+    "ValueEn": "Clients by Gender",
+    "ValueAr": "العملاء حسب الجنس"
+  },
+  "BmiDistribution": {
+    "ValueEn": "BMI Distribution",
+    "ValueAr": "توزيع مؤشر كتلة الجسم"
+  },
+  "Underweight": {
+    "ValueEn": "Underweight",
+    "ValueAr": "نقص الوزن"
+  },
+  "NormalWeight": {
+    "ValueEn": "Normal",
+    "ValueAr": "طبيعي"
+  },
+  "Overweight": {
+    "ValueEn": "Overweight",
+    "ValueAr": "زيادة الوزن"
+  },
+  "BmiMissingData": {
+    "ValueEn": "Clients without height/weight",
+    "ValueAr": "عملاء بدون طول/وزن"
+  },
+  "RecentlyAddedClients": {
+    "ValueEn": "Recently Added Clients",
+    "ValueAr": "العملاء المضافون مؤخراً"
+  },
+  "RecentlyUpdatedClients": {
+    "ValueEn": "Recently Updated Clients",
+    "ValueAr": "العملاء المحدثون مؤخراً"
+  },
+  "ViewAll": {
+    "ValueEn": "View all",
+    "ValueAr": "عرض الكل"
   }
 }

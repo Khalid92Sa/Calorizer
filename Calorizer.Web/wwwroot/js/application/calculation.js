@@ -5,32 +5,44 @@ const CalculationModule = (function () {
     let clientId = 0;
     let genderId = 0;
     let translations = {};
-
-    // Food exchange nutritional values
-    const foodNutrition = {
-        SkimmedMilk: { cho: 12, protein: 8, fat: 0, calories: 80 },
-        LowFatMilk: { cho: 12, protein: 8, fat: 5, calories: 125 },
-        FullFatMilk: { cho: 12, protein: 8, fat: 8, calories: 152 },
-        Fruit: { cho: 15, protein: 0, fat: 0, calories: 60 },
-        Vegetable: { cho: 5, protein: 2, fat: 0, calories: 25 },
-        Sugar: { cho: 5, protein: 0, fat: 0, calories: 20 },
-        Starch: { cho: 15, protein: 3, fat: 0, calories: 80 },
-        LeanMeat: { cho: 0, protein: 7, fat: 3, calories: 55 },
-        MediumFatMeat: { cho: 0, protein: 7, fat: 5, calories: 75 },
-        HighFatMeat: { cho: 0, protein: 7, fat: 8, calories: 100 },
-        Fat: { cho: 0, protein: 0, fat: 5, calories: 45 }
-    };
+    let clientName = '';
+    let notes = [];
+    let showingAllNotes = false;
+    const NOTES_PAGE_SIZE = 5;
 
     // Initialize module
-    function init(id, gender, localization) {
+    function init(id, gender, localization, notesHistory, name) {
         clientId = id;
         genderId = gender;
         translations = localization || {};
+        notes = notesHistory || [];
+        clientName = name || '';
 
         // Add event listeners for Total Calories and macronutrient inputs
         $('#totalCalories, #carbsPercentage, #proteinPercentage, #fatPercentage').on('input', function () {
             calculateMacronutrientGrams();
         });
+
+        // Food exchange: recalculate the row + totals while typing the serving
+        $(document).on('input change', '.food-serving', calculateFoodExchange);
+
+        renderNotes();
+    }
+
+    // Escape user text before injecting into HTML
+    function escapeHtml(text) {
+        return $('<div>').text(text == null ? '' : text).html();
+    }
+
+    function formatDate(dateString) {
+        const d = new Date(dateString);
+        const pad = n => String(n).padStart(2, '0');
+        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    // Trim trailing zeros: 120.00 -> 120, 7.50 -> 7.5
+    function formatNumber(value) {
+        return parseFloat(value.toFixed(2));
     }
 
     // Helper function to get localized text
@@ -148,41 +160,180 @@ const CalculationModule = (function () {
         $('#fatGrams').val(fatGrams.toFixed(2));
     }
 
-    // Calculate Food Exchange Totals
+    // Calculate Food Exchange: each row = serving x per-serving value, then totals
     function calculateFoodExchange() {
         let totalCHO = 0;
         let totalProtein = 0;
         let totalFat = 0;
         let totalCalories = 0;
 
-        // Loop through all food groups
-        Object.keys(foodNutrition).forEach(function (foodGroup) {
-            const serving = parseFloat($(`input[data-group="${foodGroup}"]`).val()) || 0;
-            const nutrition = foodNutrition[foodGroup];
+        $('.food-serving').each(function () {
+            const $input = $(this);
+            const $row = $input.closest('tr');
+            const serving = parseFloat($input.val()) || 0;
 
-            totalCHO += nutrition.cho * serving;
-            totalProtein += nutrition.protein * serving;
-            totalFat += nutrition.fat * serving;
-            totalCalories += nutrition.calories * serving;
+            const cho = (parseFloat($input.data('cho')) || 0) * serving;
+            const protein = (parseFloat($input.data('protein')) || 0) * serving;
+            const fat = (parseFloat($input.data('fat')) || 0) * serving;
+            const calories = (parseFloat($input.data('calories')) || 0) * serving;
+
+            $row.find('.row-cho').val(formatNumber(cho));
+            $row.find('.row-protein').val(formatNumber(protein));
+            $row.find('.row-fat').val(formatNumber(fat));
+            $row.find('.row-calories').val(formatNumber(calories));
+
+            totalCHO += cho;
+            totalProtein += protein;
+            totalFat += fat;
+            totalCalories += calories;
         });
 
-        // Update totals
-        $('#totalCHO').val(totalCHO.toFixed(2));
-        $('#totalProtein').val(totalProtein.toFixed(2));
-        $('#totalFat').val(totalFat.toFixed(2));
-        $('#totalCaloriesFood').val(totalCalories.toFixed(2));
+        $('#totalCHO').val(formatNumber(totalCHO));
+        $('#totalProtein').val(formatNumber(totalProtein));
+        $('#totalFat').val(formatNumber(totalFat));
+        $('#totalCaloriesFood').val(formatNumber(totalCalories));
     }
 
-    // Auto-calculate when serving values change
-    $(document).on('change', '.food-serving', function () {
-        calculateFoodExchange();
-    });
+    // ===================== Notes (history) =====================
+
+    function addNote() {
+        const note = ($('#newNote').val() || '').trim();
+        if (!note) {
+            showMessage(t('NoteRequired'), false);
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/Calculation/AddNote',
+            data: JSON.stringify({ ClientId: clientId, Note: note }),
+            contentType: 'application/json',
+            success: function (result) {
+                if (result.success) {
+                    notes = result.data || [];
+                    $('#newNote').val('');
+                    renderNotes();
+                } else {
+                    showMessage(result.message || t('ErrorOccurred'), false);
+                }
+            },
+            error: function () {
+                showMessage(t('ErrorOccurred'), false);
+            }
+        });
+    }
+
+    function deleteNote(id) {
+        if (!confirm(t('ConfirmDelete'))) return;
+
+        $.ajax({
+            type: 'POST',
+            url: '/Calculation/DeleteNote',
+            data: { id: id, clientId: clientId },
+            success: function (result) {
+                if (result.success) {
+                    notes = result.data || [];
+                    renderNotes();
+                } else {
+                    showMessage(result.message || t('ErrorOccurred'), false);
+                }
+            },
+            error: function () {
+                showMessage(t('ErrorOccurred'), false);
+            }
+        });
+    }
+
+    function renderNotes() {
+        const $tbody = $('#notesBody');
+        $tbody.empty();
+        $('#notesCount').text(notes.length);
+
+        if (notes.length === 0) {
+            $tbody.append(`<tr><td colspan="3" class="text-center text-muted">${escapeHtml(t('NoNotes'))}</td></tr>`);
+        }
+
+        const visible = showingAllNotes ? notes : notes.slice(0, NOTES_PAGE_SIZE);
+        visible.forEach(item => {
+            $tbody.append(`
+                <tr>
+                    <td>${formatDate(item.createdOn)}</td>
+                    <td dir="auto" style="white-space: pre-wrap;">${escapeHtml(item.note)}</td>
+                    <td class="text-nowrap">
+                        <button type="button" class="btn btn-sm btn-outline-primary" title="${escapeHtml(t('Print'))}" onclick="CalculationModule.printNotes(${item.id})">
+                            <i class="bi bi-printer"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-danger" title="${escapeHtml(t('Delete'))}" onclick="CalculationModule.deleteNote(${item.id})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `);
+        });
+
+        const hasMore = notes.length > NOTES_PAGE_SIZE;
+        $('#notesShowMore').toggle(hasMore && !showingAllNotes);
+        $('#notesShowLess').toggle(hasMore && showingAllNotes);
+    }
+
+    function showAllNotes() {
+        showingAllNotes = true;
+        renderNotes();
+    }
+
+    function showLessNotes() {
+        showingAllNotes = false;
+        renderNotes();
+    }
+
+    // Print notes only (not the whole page).
+    // printNotes()   -> all saved notes
+    // printNotes(id) -> one note
+    function printNotes(noteId) {
+        const toPrint = noteId ? notes.filter(n => n.id === noteId) : notes;
+        if (toPrint.length === 0) {
+            showMessage(t('NoNotes'), false);
+            return;
+        }
+
+        $('#notesPrintArea').remove();
+
+        const isRtl = document.documentElement.dir === 'rtl' || $('html').attr('lang') === 'ar';
+        const itemsHtml = toPrint.map(n => `
+            <div class="print-note">
+                <div class="print-note-date">${formatDate(n.createdOn)}</div>
+                <div class="print-note-text" dir="auto">${escapeHtml(n.note)}</div>
+            </div>
+        `).join('');
+
+        $('body').append(`
+            <div id="notesPrintArea" dir="${isRtl ? 'rtl' : 'ltr'}">
+                <h3>${escapeHtml(t('Notes'))}</h3>
+                <div class="print-meta">
+                    ${escapeHtml(t('ClientName'))}: ${escapeHtml(clientName)} &nbsp;|&nbsp;
+                    ${escapeHtml(t('ClientID'))}: ${clientId} &nbsp;|&nbsp;
+                    ${formatDate(new Date())}
+                </div>
+                ${itemsHtml}
+            </div>
+        `);
+
+        $('body').addClass('printing-notes');
+        window.print();
+        $('body').removeClass('printing-notes');
+        $('#notesPrintArea').remove();
+    }
 
     // Public API
     return {
         init: init,
         calculateEnergy: calculateEnergy,
-        calculateFoodExchange: calculateFoodExchange
+        calculateFoodExchange: calculateFoodExchange,
+        addNote: addNote,
+        deleteNote: deleteNote,
+        showAllNotes: showAllNotes,
+        showLessNotes: showLessNotes,
+        printNotes: printNotes
     };
 })();
 

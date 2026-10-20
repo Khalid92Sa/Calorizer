@@ -33,7 +33,8 @@ namespace Calorizer.Business.Services
                 Age = CalculateAge(client.DateOfBirth),
                 GenderId = client.GenderId,
                 PhysicalActivityFactor = 1.2m, // Default value
-                PhysicalActivityFactors = await _lookupService.GetLookupItems(LookupTypes.PhysicalActivityFactor)
+                PhysicalActivityFactors = await _lookupService.GetLookupItems(LookupTypes.PhysicalActivityFactor),
+                NotesHistory = await GetNotesAsync(client.Id)
             };
 
             return calculation;
@@ -103,6 +104,51 @@ namespace Calorizer.Business.Services
                 };
             }
         }
+
+        #region Calculation Notes
+
+        public async Task<Response<List<CalculationNoteDto>>> AddNoteAsync(CalculationNoteDto noteDto, int userId)
+        {
+            var note = noteDto.Note?.Trim() ?? string.Empty;
+
+            if (string.IsNullOrWhiteSpace(note))
+                return new Response<List<CalculationNoteDto>>(false) { Message = "NoteRequired" };
+
+            if (note.Length > 4000)
+                return new Response<List<CalculationNoteDto>>(false) { Message = "NoteMaxLength" };
+
+            await _unitOfWork.Repository<CalculationNote>().AddAsync(new CalculationNote
+            {
+                ClientId = noteDto.ClientId,
+                Note = note,
+                CreatedBy = userId,
+                CreatedOn = DateTime.Now
+            });
+
+            return new Response<List<CalculationNoteDto>>(await GetNotesAsync(noteDto.ClientId));
+        }
+
+        public async Task<List<CalculationNoteDto>> GetNotesAsync(int clientId)
+        {
+            var notes = await _unitOfWork.Repository<CalculationNote>()
+                .FindAsync(n => n.ClientId == clientId);
+
+            return notes.Select(n => new CalculationNoteDto
+            {
+                Id = n.Id,
+                ClientId = n.ClientId,
+                Note = n.Note,
+                CreatedOn = n.CreatedOn,
+                CreatedBy = n.CreatedBy
+            }).OrderByDescending(n => n.CreatedOn).ToList();
+        }
+
+        public async Task DeleteNoteAsync(int id)
+        {
+            await _unitOfWork.Repository<CalculationNote>().DeleteAsync(id);
+        }
+
+        #endregion
 
         private int CalculateAge(DateTime dateOfBirth)
         {

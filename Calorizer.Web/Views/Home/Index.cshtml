@@ -1,8 +1,194 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model Calorizer.Business.DTOs.DashboardDto
+@using Microsoft.AspNetCore.Http
+
+@{
+    ViewData["Title"] = Localizer["Dashboard"];
+    var isAr = Context.Session.GetString("Language") == "ar";
+    var bmiKnown = Model.BmiUnderweight + Model.BmiNormal + Model.BmiOverweight;
+    int Pct(int part) => bmiKnown == 0 ? 0 : (int)Math.Round(part * 100.0 / bmiKnown);
+    string ClientName(Calorizer.Business.DTOs.DashboardClientItem c) =>
+        isAr && !string.IsNullOrWhiteSpace(c.FullNameAr) ? c.FullNameAr! : c.FullNameEn;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    .kpi-card { border: 0; border-left: 4px solid var(--kpi-color); }
+    .kpi-card .kpi-icon { font-size: 2rem; color: var(--kpi-color); opacity: .85; }
+    .kpi-card .kpi-value { font-size: 2rem; font-weight: 700; line-height: 1; }
+    .kpi-card .kpi-label { color: #6c757d; font-size: .9rem; }
+    [dir="rtl"] .kpi-card { border-left: 0; border-right: 4px solid var(--kpi-color); }
+    .dash-table td, .dash-table th { vertical-align: middle; }
+</style>
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="mb-0"><i class="bi bi-speedometer2"></i> @Localizer["Dashboard"]</h3>
+        <a asp-controller="Client" asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> @Localizer["AddNewClient"]
+        </a>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <a asp-controller="Client" asp-action="Index" class="text-decoration-none text-reset">
+                <div class="card shadow-sm kpi-card h-100" style="--kpi-color: #0d6efd;">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="kpi-label">@Localizer["TotalClients"]</div>
+                            <div class="kpi-value">@Model.TotalClients</div>
+                        </div>
+                        <i class="bi bi-people-fill kpi-icon"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm kpi-card h-100" style="--kpi-color: #198754;">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="kpi-label">@Localizer["NewClientsThisMonth"]</div>
+                        <div class="kpi-value">@Model.NewClientsThisMonth</div>
+                    </div>
+                    <i class="bi bi-person-plus-fill kpi-icon"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm kpi-card h-100" style="--kpi-color: #fd7e14;">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="kpi-label">@Localizer["UpdatedClientsThisMonth"]</div>
+                        <div class="kpi-value">@Model.UpdatedClientsThisMonth</div>
+                    </div>
+                    <i class="bi bi-pencil-square kpi-icon"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm kpi-card h-100" style="--kpi-color: #6f42c1;">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="kpi-label">@Localizer["CalculationNotesCount"]</div>
+                        <div class="kpi-value">@Model.CalculationNotesCount</div>
+                    </div>
+                    <i class="bi bi-journal-text kpi-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breakdowns -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white fw-bold"><i class="bi bi-gender-ambiguous"></i> @Localizer["ClientsByGender"]</div>
+                <div class="card-body">
+                    @foreach (var g in Model.ClientsByGender)
+                    {
+                        var pct = Model.TotalClients == 0 ? 0 : (int)Math.Round(g.Count * 100.0 / Model.TotalClients);
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span>@(isAr ? g.NameAr : g.NameEn)</span>
+                                <span class="fw-bold">@g.Count <small class="text-muted">(@pct%)</small></span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar" style="width: @pct%;"></div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white fw-bold"><i class="bi bi-activity"></i> @Localizer["BmiDistribution"]</div>
+                <div class="card-body">
+                    <div class="row text-center mb-3">
+                        <div class="col-4">
+                            <div class="fs-3 fw-bold text-danger">@Model.BmiUnderweight</div>
+                            <div class="text-muted small">@Localizer["Underweight"] (&lt; 18.5)</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="fs-3 fw-bold text-success">@Model.BmiNormal</div>
+                            <div class="text-muted small">@Localizer["NormalWeight"] (18.5 – 24.5)</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="fs-3 fw-bold text-danger">@Model.BmiOverweight</div>
+                            <div class="text-muted small">@Localizer["Overweight"] (&gt; 24.5)</div>
+                        </div>
+                    </div>
+                    <div class="progress" style="height: 14px;">
+                        <div class="progress-bar bg-warning" style="width: @Pct(Model.BmiUnderweight)%;" title="@Localizer["Underweight"]"></div>
+                        <div class="progress-bar bg-success" style="width: @Pct(Model.BmiNormal)%;" title="@Localizer["NormalWeight"]"></div>
+                        <div class="progress-bar bg-danger" style="width: @Pct(Model.BmiOverweight)%;" title="@Localizer["Overweight"]"></div>
+                    </div>
+                    @if (Model.BmiUnknown > 0)
+                    {
+                        <div class="text-muted small mt-2">@Localizer["BmiMissingData"]: @Model.BmiUnknown</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Lists -->
+    <div class="row g-3">
+        @{
+            var lists = new[]
+            {
+                (Title: Localizer["RecentlyAddedClients"], Icon: "bi-person-plus", Items: Model.RecentlyAdded),
+                (Title: Localizer["RecentlyUpdatedClients"], Icon: "bi-clock-history", Items: Model.RecentlyUpdated)
+            };
+        }
+        @foreach (var list in lists)
+        {
+            <div class="col-lg-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <span class="fw-bold"><i class="bi @list.Icon"></i> @list.Title</span>
+                        <a asp-controller="Client" asp-action="Index" class="small">@Localizer["ViewAll"]</a>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover dash-table mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>@Localizer["ClientName"]</th>
+                                    <th>@Localizer["MobileNumber"]</th>
+                                    <th>@Localizer["BMI"]</th>
+                                    <th>@Localizer["Date"]</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (!list.Items.Any())
+                                {
+                                    <tr><td colspan="5" class="text-center text-muted py-3">@Localizer["NoClientsFound"]</td></tr>
+                                }
+                                @foreach (var c in list.Items)
+                                {
+                                    var bmiOk = c.Bmi >= 18.5m && c.Bmi <= 24.5m;
+                                    <tr>
+                                        <td dir="auto">@ClientName(c)</td>
+                                        <td>@c.MobileNumber</td>
+                                        <td>
+                                            @if (c.Bmi.HasValue)
+                                            {
+                                                <span class="badge @(bmiOk ? "bg-success" : "bg-danger")">@c.Bmi.Value.ToString("0.0")</span>
+                                            }
+                                        </td>
+                                        <td class="text-nowrap small">@c.Date?.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td class="text-nowrap text-end">
+                                            <a asp-controller="Client" asp-action="Edit" asp-route-id="@c.Id" class="btn btn-sm btn-outline-dark" title="@Localizer["Edit"]"><i class="bi bi-pencil"></i></a>
+                                            <a asp-controller="Calculation" asp-action="Index" asp-route-id="@c.Id" class="btn btn-sm btn-outline-success" title="@Localizer["Calculate"]"><i class="bi bi-calculator"></i></a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>
